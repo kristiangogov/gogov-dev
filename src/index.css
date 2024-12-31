@@ -12,7 +12,6 @@
 /* Global */
 :root {
   /* Fonts */
-  --font-fancy: "Yellowtail", cursive;
   --font-default: "Roboto", sans-serif;
   /* Colors */
   /* Basic */
@@ -43,7 +42,7 @@ body {
   line-height: 1.5;
   font-size: 0.875rem;
   transition: var(--darkModeTransition);
-  background: var(--clr-dark);
+  background: var(--backgroundColor);
   color: var(--textColor);
 }
 
@@ -65,7 +64,7 @@ h5 {
   letter-spacing: var(--spacing);
   line-height: 1.25;
   margin-bottom: 0.75rem;
-  color: var(--clr-light);
+  color: var(--textColor);
 }
 h1 {
   font-size: 2.5rem;
@@ -83,7 +82,7 @@ h5 {
   font-size: 0.875rem;
 }
 p {
-  color: var(--clr-light);
+  color: var(--textColor);
 }
 @media screen and (min-width: 800px) {
   h1 {
