@@ -1,6 +1,7 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { toggleTheme } from '../features/darkThemeSlice';
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { toggleTheme } from "../features/darkThemeSlice";
+import styled from "styled-components";
 
 const DarkTheme = () => {
   const isDarkMode = useSelector((state) => state.darkTheme.isDarkMode);
@@ -10,19 +11,27 @@ const DarkTheme = () => {
     dispatch(toggleTheme());
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isDarkMode) {
-      document.body.classList.add('dark-theme');
+      document.body.classList.add("dark-theme");
     } else {
-      document.body.classList.remove('dark-theme');
+      document.body.classList.remove("dark-theme");
     }
   }, [isDarkMode]);
 
   return (
-    <button onClick={handleToggle}>
-      {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-    </button>
+    <Wrapper>
+      <h1 onClick={handleToggle}>
+        {isDarkMode ? "🌞" : "🌚"}
+      </h1>
+    </Wrapper>
   );
 };
+
+const Wrapper = styled.div`
+  display: flex;
+  user-select:none;
+  margin-bottom: 1rem;
+`;
 
 export default DarkTheme;
