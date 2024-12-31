@@ -1,12 +1,12 @@
 import "./App.css";
-import Counter from "./components/counter";
+import Counter from "./components/Counter";
 import DarkTheme from "./components/DarkTheme";
 
 function App() {
 
   return (
     <>
-      <Counter />
+    <Counter />
       <DarkTheme />
       <div>
       <h1>gogov.dev</h1>
