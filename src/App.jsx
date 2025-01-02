@@ -1,17 +1,15 @@
 import "./App.css";
-import ComingSoon from "./components/ComingSoon";
-import Counter from "./components/Counter";
-import DarkTheme from "./components/DarkTheme";
-import FaviconSwitcher from "./components/FaviconSwitcher";
+import { ComingSoon, FaviconSwitcher, Header } from "./components/";
 
 function App() {
   return (
     <>
+      <Header />
+      <div className="content">
+      <FaviconSwitcher />
       <div className="all">
-        {/* <DarkTheme /> */}
-        <FaviconSwitcher />
-        <ComingSoon />
-        {/* <Counter /> */}
+      <ComingSoon/>
+      </div>
       </div>
     </>
   );

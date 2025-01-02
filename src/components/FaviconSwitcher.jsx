@@ -5,7 +5,7 @@ const FaviconSwitcher = () => {
     const updateFavicon = (theme) => {
       const link = document.querySelector("link[rel='icon']") || document.createElement("link");
       link.rel = "icon";
-      link.href = theme === "dark" ? "/thewhiteg.svg" : "/theblackg.svg";
+      link.href = theme === "dark" ? "/litelogo.svg" : "/darklogo.svg";
       document.head.appendChild(link);
     };
 
