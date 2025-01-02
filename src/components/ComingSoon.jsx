@@ -16,7 +16,6 @@ const ComingSoon = () => {
 };
 const Wrapper = styled.div`
   display: flex;
-  user-select: none;
   h1 {
     display: flex;
     font-weight: 700;

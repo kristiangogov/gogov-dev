@@ -1,4 +1,4 @@
-body {
+.content {
   width: var(--view-width);
   max-width: var(--max-width);
   margin: 15% auto;
