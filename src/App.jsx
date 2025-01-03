@@ -1,5 +1,5 @@
 import "./App.css";
-import { ComingSoon, FaviconSwitcher, Header } from "./components/";
+import { ComingSoon, FaviconSwitcher, Header, Hero } from "./components/";
 
 function App() {
   return (
@@ -8,7 +8,7 @@ function App() {
       <div className="content">
       <FaviconSwitcher />
       <div className="all">
-      <ComingSoon/>
+      <Hero/>
       </div>
       </div>
     </>
