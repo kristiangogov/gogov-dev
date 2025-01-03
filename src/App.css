@@ -1,7 +1,7 @@
 .content {
   width: var(--view-width);
   max-width: var(--max-width);
-  margin: 15% auto;
+  margin: 10% auto;
 }
 
 .all {
