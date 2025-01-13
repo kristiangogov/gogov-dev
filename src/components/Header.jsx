@@ -2,15 +2,16 @@ import React from "react";
 import styled from "styled-components";
 import { DarkTheme } from "./";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const isDarkMode = useSelector((state) => state.darkTheme.isDarkMode);
   return (
     <Wrapper>
       {isDarkMode ? (
-        <img className="logo" src="/litelogo.svg" />
+        <Link to="/"><img className="logo" src="/litelogo.svg" /></Link>
       ) : (
-        <img className="logo" src="/darklogo.svg" />
+        <Link to="/"><img className="logo" src="/darklogo.svg" /></Link>
       )}
       <DarkTheme />
     </Wrapper>
