@@ -1,31 +1,35 @@
 import "./App.css";
-import { FaviconSwitcher, Header, Hero, LinksComponent, Navbar } from "./components/";
-import { Routes, Route, Link} from 'react-router-dom';
+import { FaviconSwitcher, Header, Hero, LinksComponent } from "./components/";
+import { Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-<>
-  <Header />
-  <Navbar />
-  <nav>
-    <Link to="/">Home</Link>
-    <Link to="/links">Links</Link>
-  </nav>
-  <Routes>
-    <Route
-      path="/"
-      element={
-        <div className="content">
-          <FaviconSwitcher />
-          <div className="all">
-            <Hero />
-          </div>
-        </div>
-      }
-    />
-    <Route path="/links" element={<LinksComponent />} />
-  </Routes>
-</>
+    <>
+      <Header />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <div className="content">
+              <FaviconSwitcher />
+              <div className="all">
+                <Hero />
+              </div>
+            </div>
+          }
+        />
+        <Route
+          path="/links"
+          element={
+            <div className="content">
+              <div className="all">
+                <LinksComponent />
+              </div>
+            </div>
+          }
+        />
+      </Routes>
+    </>
   );
 }
 

@@ -11,7 +11,7 @@ const Hero = () => {
       <p><b>🎂 April 4th</b></p>
       <p>🔗 <Link to="/links">Links</Link></p>
       <h5>🚧 This page is still under construction 🚧</h5>
-      <h5>Visit my <a href='https://github.com/kristiangogov' target='_blank'>/github</a> in the meantime ;)</h5>
+      <h5>Visit my <a href='https://github.com/kristiangogov' target='_blank'>/github</a> in the meantime.</h5>
     </Wrapper>
   )
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { DarkTheme } from "./";
+import { DarkTheme, Navbar } from "./";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -13,6 +13,7 @@ const Header = () => {
       ) : (
         <Link to="/"><img className="logo" src="/darklogo.svg" /></Link>
       )}
+      <Navbar />
       <DarkTheme />
     </Wrapper>
   );
