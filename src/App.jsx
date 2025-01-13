@@ -1,16 +1,34 @@
 import "./App.css";
-import { ComingSoon, FaviconSwitcher, Header, Hero } from "./components/";
+import { FaviconSwitcher, Header, Hero, LinksComponent } from "./components/";
+import { Routes, Route } from "react-router-dom";
 
 function App() {
   return (
     <>
       <Header />
-      <div className="content">
-      <FaviconSwitcher />
-      <div className="all">
-      <Hero/>
-      </div>
-      </div>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <div className="content">
+              <FaviconSwitcher />
+              <div className="all">
+                <Hero />
+              </div>
+            </div>
+          }
+        />
+        <Route
+          path="/links"
+          element={
+            <div className="content">
+              <div className="all">
+                <LinksComponent />
+              </div>
+            </div>
+          }
+        />
+      </Routes>
     </>
   );
 }
