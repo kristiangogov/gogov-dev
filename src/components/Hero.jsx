@@ -9,7 +9,7 @@ const Hero = () => {
       <p><b>Operations Engineer</b> @ The Coca-Cola Company</p>
       <p>📅 Joined <b>Nov 2023</b></p>
       <p><b>🎂 April 4th</b></p>
-      <p>🔗 <Link to="/links">Links</Link></p>
+      <p>🔗 <Link to="/links">/links</Link></p>
       <h5>🚧 This page is still under construction 🚧</h5>
       <h5>Visit my <a href='https://github.com/kristiangogov' target='_blank'>/github</a> in the meantime.</h5>
     </Wrapper>
@@ -24,7 +24,7 @@ h1 {
   letter-spacing: -4px;
 }
 a {
-  color: #ffc83d;
+  color: var(--accent-color);
   font-weight: 900;
 }
 a:hover{
