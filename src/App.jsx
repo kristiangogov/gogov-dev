@@ -1,5 +1,5 @@
 import "./App.css";
-import { FaviconSwitcher, Header, Hero, LinksComponent } from "./components/";
+import { FaviconSwitcher, Header, Hero, LinksComponent, Blog } from "./components/";
 import { Routes, Route } from "react-router-dom";
 
 function App() {
@@ -24,6 +24,16 @@ function App() {
             <div className="content">
               <div className="all">
                 <LinksComponent />
+              </div>
+            </div>
+          }
+        />
+        <Route
+          path="/blog"
+          element={
+            <div className="content">
+              <div className="all">
+                <Blog />
               </div>
             </div>
           }

@@ -5,9 +5,8 @@ import styled from "styled-components";
 const Navbar = () => {
   return (
     <Wrapper>
-        <Link to="/">HOME</Link>
         <Link to="/links">LINKS</Link>
-        <Link to="/">BLOG</Link>
+        <Link to="/blog">BLOG</Link>
     </Wrapper>
   );
 };
