@@ -45,6 +45,10 @@ function App() {
             </div>
           }
         />
+        <Route
+          path="/blog/:slug"
+          element=<BlogPost/>
+        />
       </Routes>
     </>
   );

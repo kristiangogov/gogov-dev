@@ -3,15 +3,17 @@ import styled from "styled-components";
 import { Link } from "react-router-dom";
 
 const BlogCard = ({ postData }) => {
-  console.log(postData);
   const slug = postData.fields.slug;
+
   return (
     <Wrapper>
+    <Link to={`${slug}`}>
       <div className="post" key={postData.sys.id}>
         <h4>{postData.fields.title}</h4>
         <img src={postData.fields.featuredImage} />
         {postData.fields.description}
       </div>
+      </Link>
     </Wrapper>
   );
 };

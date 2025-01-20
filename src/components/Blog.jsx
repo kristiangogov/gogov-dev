@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Link } from "react-router-dom";
-import styled from "styled-components";
 import { BlogCard } from "./";
+import styled from "styled-components";
 
 const Links = () => {
     const { data, loading, error } = useSelector((state) => state.contentful);
-
+  console.log(data)
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
   if (!data || !data.items) return <p>No data available.</p>;
