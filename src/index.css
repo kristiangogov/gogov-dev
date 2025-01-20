@@ -19,6 +19,7 @@
   --clr-dark: #121212;
   --dark-mode-bg-color: #121212;
   --dark-mode-text-color: #f8fafc;
+  --accent-color: #ffc83d;
   /* Dark Mode */
   --backgroundColor: var(--clr-light);
   --textColor: var(--clr-dark);
