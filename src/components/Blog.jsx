@@ -1,10 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { BlogCard } from "./";
 
 const Links = () => {
+  const [blogData, setBlogData] = useState(null);
+  useEffect(() => {
+    callContentful();
+  }, []);
+  // console.log(blogData);
+  const callContentful = async () => {
+    try {
+      const res = await axios.get("/.netlify/functions/getAllBlogPosts");
+      setBlogData(res.data.message);
+    } catch (error) {
+      console.error("Error calling Netlify function:", error);
+      setBlogData("Error fetching data");
+    }
+  };
   return (
     <Wrapper>
+      <BlogCard blogData={blogData} />
       <h1>This section will contain my blog, but clearly still doesn't 🙈</h1>
       <Link to="/">⬅ Return to Homepage</Link>
     </Wrapper>
