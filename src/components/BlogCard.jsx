@@ -1,22 +1,38 @@
 import React from "react";
+import styled from "styled-components";
+import { Link } from "react-router-dom";
 
-const BlogCard = ({blogData}) => {
-    console.log(blogData)
-    if (blogData === null ) {
-        return <div>loading</div>
-    }
+const BlogCard = ({ postData }) => {
+  console.log(postData);
+  const slug = postData.fields.slug;
   return (
-    <div>
-      {blogData.items.map((post, index) => {
-        return (
-          <div key={post.sys.id}>
-            {post.fields.title}
-            <img src={post.fields.featuredImage} />
-          </div>
-        );
-      })}
-    </div>
+    <Wrapper>
+      <div className="post" key={postData.sys.id}>
+        <h4>{postData.fields.title}</h4>
+        <img src={postData.fields.featuredImage} />
+        {postData.fields.description}
+      </div>
+    </Wrapper>
   );
 };
+
+const Wrapper = styled.article`
+  .post {
+    border: 3px dashed var(--accent-color);
+    padding: 1rem;
+    border-radius: 15px;
+    width: 350px;
+    height: 350px;
+  }
+  .post:hover {
+    background-color: var(--accent-color);
+  }
+  .post img {
+    width: 100%;
+    height: 70%;
+    object-fit: cover;
+    border-radius: 10px;
+  }
+`;
 
 export default BlogCard;

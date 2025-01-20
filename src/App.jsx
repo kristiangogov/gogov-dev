@@ -1,8 +1,15 @@
 import "./App.css";
-import { FaviconSwitcher, Header, Hero, LinksComponent, Blog } from "./components/";
+import { FaviconSwitcher, Header, Hero, LinksComponent, Blog, BlogPost } from "./components/";
 import { Routes, Route } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { fetchData } from './features/contentfulSlice';
+import { useEffect } from "react";
 
 function App() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchData());
+}, []);
   return (
     <>
       <Header />

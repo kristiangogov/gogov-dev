@@ -1,34 +1,41 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { BlogCard } from "./";
 
 const Links = () => {
-  const [blogData, setBlogData] = useState(null);
-  useEffect(() => {
-    callContentful();
-  }, []);
-  // console.log(blogData);
-  const callContentful = async () => {
-    try {
-      const res = await axios.get("/.netlify/functions/getAllBlogPosts");
-      setBlogData(res.data.message);
-    } catch (error) {
-      console.error("Error calling Netlify function:", error);
-      setBlogData("Error fetching data");
-    }
-  };
+    const { data, loading, error } = useSelector((state) => state.contentful);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (!data || !data.items) return <p>No data available.</p>;
   return (
     <Wrapper>
-      <BlogCard blogData={blogData} />
-      <h1>This section will contain my blog, but clearly still doesn't 🙈</h1>
+      <article className="blog-card">
+        {data.items.map((postData, index) => {
+          return (
+            <BlogCard
+              postData={postData}
+              key={postData.sys.id}
+            />
+          );
+        })}
+      </article>
       <Link to="/">⬅ Return to Homepage</Link>
     </Wrapper>
   );
 };
 const Wrapper = styled.section`
-  max-width: 650px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .blog-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
   h1 {
     font-weight: 900;
     letter-spacing: -2px;
