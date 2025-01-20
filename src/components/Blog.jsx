@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import { Link } from "react-router-dom";
-import { BlogCard } from "./";
+import { BlogEntry } from "./";
 import styled from "styled-components";
 
 const Links = () => {
@@ -14,33 +14,34 @@ const Links = () => {
       <article className="blog-card">
         {data.items.map((postData, index) => {
           return (
-            <BlogCard
+            <BlogEntry
               postData={postData}
               key={postData.sys.id}
             />
           );
         })}
       </article>
-      <Link to="/">⬅ Return to Homepage</Link>
+      <Link to="/" className='home'>⬅ Return to Homepage</Link>
     </Wrapper>
   );
 };
 const Wrapper = styled.section`
   display: flex;
   flex-direction: column;
-  align-items: center;
   .blog-card {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 10px;
   }
-
+  .home {
+    margin-top: 5rem;
+  }
   h1 {
     font-weight: 900;
     letter-spacing: -2px;
   }
   a {
-    color: #ffc83d;
+    color: var(--accent-color);
     font-weight: 900;
   }
   a:hover {

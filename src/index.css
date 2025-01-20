@@ -17,12 +17,15 @@
   /* Basic */
   --clr-light: #f8fafc;
   --clr-dark: #121212;
+  --clr-medium: #F0F0F0;
   --dark-mode-bg-color: #121212;
   --dark-mode-text-color: #f8fafc;
+  --dark-mode-medium-color: #383838;
   --accent-color: #ffc83d;
   /* Dark Mode */
   --backgroundColor: var(--clr-light);
   --textColor: var(--clr-dark);
+  --mediumColor: var(--clr-medium);
   --darkModeTransition: color 0.3s ease-in-out,
     background-color 0.3s ease-in-out;
   /* Defaults */
@@ -114,4 +117,5 @@ p {
 .dark-theme {
   --textColor: var(--dark-mode-text-color);
   --backgroundColor: var(--dark-mode-bg-color);
+  --mediumColor: var(--dark-mode-medium-color)
 }
