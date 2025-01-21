@@ -28,11 +28,6 @@ const Links = () => {
 const Wrapper = styled.section`
   display: flex;
   flex-direction: column;
-  .blog-card {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-  }
   .home {
     margin-top: 5rem;
   }
