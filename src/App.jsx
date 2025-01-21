@@ -1,8 +1,22 @@
 import "./App.css";
-import { FaviconSwitcher, Header, Hero, LinksComponent, Blog } from "./components/";
+import {
+  FaviconSwitcher,
+  Header,
+  Hero,
+  LinksComponent,
+  Blog,
+  BlogPost,
+} from "./components/";
 import { Routes, Route } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { fetchData } from "./features/contentfulSlice";
+import { useEffect } from "react";
 
 function App() {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchData());
+  }, []);
   return (
     <>
       <Header />
@@ -10,31 +24,33 @@ function App() {
         <Route
           path="/"
           element={
-            <div className="content">
+            <div className="content margin flex-center">
               <FaviconSwitcher />
-              <div className="all">
                 <Hero />
-              </div>
             </div>
           }
         />
         <Route
           path="/links"
           element={
-            <div className="content">
-              <div className="all">
+            <div className="content margin flex-center">
                 <LinksComponent />
-              </div>
             </div>
           }
         />
         <Route
           path="/blog"
           element={
-            <div className="content">
-              <div className="all">
+            <div className="content margin flex-center">
                 <Blog />
-              </div>
+            </div>
+          }
+        />
+        <Route
+          path="/blog/:slug"
+          element={
+            <div className="content margin flex-center">
+                <BlogPost />
             </div>
           }
         />

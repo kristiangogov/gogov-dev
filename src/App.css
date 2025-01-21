@@ -1,11 +1,15 @@
 .content {
   width: var(--view-width);
   max-width: var(--max-width);
-  margin: 10% auto;
+  margin: 0 auto;
 }
 
-.all {
+.flex-center {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.margin {
+  margin: 10% auto;
 }
