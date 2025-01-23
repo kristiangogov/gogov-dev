@@ -1,11 +1,10 @@
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { BlogEntry } from "./";
 import styled from "styled-components";
 
 const Links = () => {
-    const { data, loading, error } = useSelector((state) => state.contentful);
-  console.log(data)
+  const { data, loading, error } = useSelector((state) => state.contentful);
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
   if (!data || !data.items) return <p>No data available.</p>;
@@ -13,15 +12,12 @@ const Links = () => {
     <Wrapper>
       <article className="blog-card">
         {data.items.map((postData, index) => {
-          return (
-            <BlogEntry
-              postData={postData}
-              key={postData.sys.id}
-            />
-          );
+          return <BlogEntry postData={postData} key={postData.sys.id} />;
         })}
       </article>
-      <Link to="/" className='home'>⬅ Return to Homepage</Link>
+      <Link to="/" className="home">
+        ⬅ Return to Homepage
+      </Link>
     </Wrapper>
   );
 };
