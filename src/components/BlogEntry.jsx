@@ -8,14 +8,14 @@ const BlogCard = ({ postData }) => {
 
   return (
     <Wrapper key={postData.sys.id}>
-      <article className="post" >
-        <Link to={`${slug}`}>
+      <Link to={`${slug}`}>
+        <article className="post">
           <h4>{postData.fields.title}</h4>
-        </Link>
-        <p className="date">
-          Last Update: {formatDate(postData.sys.updatedAt)}
-        </p>
-      </article>
+          <p className="date">{formatDate(postData.sys.updatedAt)}
+          </p>
+        </article>
+      <div className="line"></div>
+      </Link>
     </Wrapper>
   );
 };
@@ -24,13 +24,33 @@ const Wrapper = styled.section`
   display: flex;
   flex-direction: row;
   gap: 20px;
+  .line {
+    width: 97%;
+    margin: 0 auto;
+    height: 1px;
+    background-color: var(--mediumColor)
+  }
+  .post {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 650px;
+    height: 50px;
+    border-radius: 15px;
+    padding: 35px 15px;
+  }
+  .post:hover + .line {
+    display:none;
+  }
+  .post:hover {
+    background-color: var(--mediumColor);
+    text-decoration: none;
+  }
   img {
     width: 100px;
     height: 100px;
     object-fit: cover;
-  }
-  .date {
-    color: var(--mediumColor);
   }
   .description {
     margin: 0.25rem 0 2rem 0;
@@ -38,13 +58,13 @@ const Wrapper = styled.section`
   h4 {
     margin: 0;
   }
-  a {
-    color: var(--accent-color);
-    font-weight: 900;
+  a, a:hover {
+    text-decoration: none;
   }
-  a:hover {
-    text-decoration: underline;
-    text-decoration-thickness: 3px;
+  p {
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: -1px;
   }
 `;
 

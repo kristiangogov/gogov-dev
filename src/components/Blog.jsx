@@ -11,6 +11,9 @@ const Links = () => {
   return (
     <Wrapper>
       <article className="blog-card">
+      <h1>Blog</h1>
+      <p>Here you can find the <strong>{data.items.length} blog posts</strong> I wrote.</p>
+      <div className="blog-line"></div>
         {data.items.map((postData, index) => {
           return <BlogEntry postData={postData} key={postData.sys.id} />;
         })}
@@ -24,18 +27,28 @@ const Links = () => {
 const Wrapper = styled.section`
   display: flex;
   flex-direction: column;
+  .blog-line {
+    width: 97%;
+    margin: 3rem auto;
+    height: 1px;
+    background-color: var(--accent-color)
+  }
   .home {
     margin-top: 5rem;
   }
   h1 {
     font-weight: 900;
     letter-spacing: -2px;
+    text-align: center;
   }
-  a {
+  p{
+    text-align:center;
+  }
+  .home {
     color: var(--accent-color);
     font-weight: 900;
   }
-  a:hover {
+  .home:hover {
     text-decoration: underline;
     text-decoration-thickness: 3px;
   }
