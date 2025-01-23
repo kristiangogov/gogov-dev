@@ -12,38 +12,15 @@ import "highlight.js/styles/atom-one-dark.css";
 const BlogPost = () => {
   const { data, loading, error } = useSelector((state) => state.contentful);
   const [singlePost, setSinglePost] = useState(null);
-  const [postId, setPostId] = useState(null);
   const { slug } = useParams();
-  console.log(`this is the slug: ${slug}`);
-  console.log(singlePost);
-  const getPost = async () => {
-    try {
-      const response = await axios.get(
-        "/.netlify/functions/getSingleBlogPost",
-        {
-          params: { postId },
-        }
-      );
-      setSinglePost(response.data.message);
-    } catch (error) {
-      console.error("Error fetching single post:", error.message);
-    }
-  };
-
   useEffect(() => {
     if (data && data.items && slug) {
-      // Find the post matching the slug
       const post = data.items.find((item) => item.fields.slug === slug);
       if (post) {
-        setPostId(post.sys.id); // Set the postId
+        setSinglePost(post)
       }
     }
   }, [data, slug]);
-  useEffect(() => {
-    if (postId) {
-      getPost();
-    }
-  }, [postId]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
