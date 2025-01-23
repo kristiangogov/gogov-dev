@@ -12,7 +12,7 @@ const Links = () => {
     <Wrapper>
       <article className="blog-card">
       <h1>Blog</h1>
-      <p>Here you can find all the 198 articles I wrote.</p>
+      <p>Here you can find the <strong>{data.items.length} blog posts</strong> I wrote.</p>
       <div className="blog-line"></div>
         {data.items.map((postData, index) => {
           return <BlogEntry postData={postData} key={postData.sys.id} />;
