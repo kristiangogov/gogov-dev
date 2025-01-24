@@ -11,10 +11,9 @@ const BlogCard = ({ postData }) => {
       <Link to={`${slug}`}>
         <article className="post">
           <h4>{postData.fields.title}</h4>
-          <p className="date">{formatDate(postData.sys.updatedAt)}
-          </p>
+          <p className="date">{formatDate(postData.sys.updatedAt)}</p>
         </article>
-      <div className="line"></div>
+        <div className="line"></div>
       </Link>
     </Wrapper>
   );
@@ -28,7 +27,7 @@ const Wrapper = styled.section`
     width: 97%;
     margin: 0 auto;
     height: 1px;
-    background-color: var(--mediumColor)
+    background-color: var(--mediumColor);
   }
   .post {
     display: flex;
@@ -41,7 +40,7 @@ const Wrapper = styled.section`
     padding: 35px 15px;
   }
   .post:hover + .line {
-    display:none;
+    display: none;
   }
   .post:hover {
     background-color: var(--mediumColor);
@@ -57,14 +56,27 @@ const Wrapper = styled.section`
   }
   h4 {
     margin: 0;
+    letter-spacing: -1px;
   }
-  a, a:hover {
+  a,
+  a:hover {
     text-decoration: none;
   }
   p {
     font-weight: 500;
     font-size: 14px;
     letter-spacing: -1px;
+    white-space: nowrap;
+  }
+  @media screen and (max-width: 700px) {
+    width: 95%;
+    .post {
+      flex-direction: column;
+      align-items: flex-start;
+      height: auto;
+      padding: 20px 10px;
+      width: 90vw;
+    }
   }
 `;
 

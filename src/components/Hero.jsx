@@ -33,6 +33,12 @@ a:hover{
 h5 {
     margin-top: 3rem;
 }
+  @media screen and (max-width: 700px) {
+    width: 90vw;
+  }
+  h5 {
+    font-size: 13px;
+  }
 `
 
 export default Hero

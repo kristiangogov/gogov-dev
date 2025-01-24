@@ -26,7 +26,7 @@ function App() {
           element={
             <div className="content margin flex-center">
               <FaviconSwitcher />
-                <Hero />
+              <Hero />
             </div>
           }
         />
@@ -34,7 +34,7 @@ function App() {
           path="/links"
           element={
             <div className="content margin flex-center">
-                <LinksComponent />
+              <LinksComponent />
             </div>
           }
         />
@@ -42,7 +42,7 @@ function App() {
           path="/blog"
           element={
             <div className="content margin flex-center">
-                <Blog />
+              <Blog />
             </div>
           }
         />
@@ -50,7 +50,7 @@ function App() {
           path="/blog/:slug"
           element={
             <div className="content margin flex-center">
-                <BlogPost />
+              <BlogPost />
             </div>
           }
         />
