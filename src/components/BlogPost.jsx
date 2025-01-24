@@ -83,7 +83,6 @@ const Wrapper = styled.article`
     display: block;
     padding: 0;
   }
-
   h2 {
     margin: 0;
   }
@@ -93,11 +92,12 @@ const Wrapper = styled.article`
   .date {
     color: var(--mediumColor);
   }
-  img {
-    width: 200px;
+  .markdown-body img {
+    max-width: 100%;
+    height: auto;
   }
   @media screen and (max-width: 700px) {
-    width: 95%;
+    width: 90vw;
   }
 `;
 
