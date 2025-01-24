@@ -70,15 +70,14 @@ const Wrapper = styled.section`
   }
   @media screen and (max-width: 700px) {
     width: 95%;
-  }
-
-  .post {
+    .post {
       flex-direction: column;
       align-items: flex-start;
       height: auto;
       padding: 20px 10px;
       width: 90vw;
     }
+  }
 `;
 
 export default BlogCard;
