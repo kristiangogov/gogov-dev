@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import axios from "axios";
 import { useParams } from "react-router";
 import { formatDate } from "../utils/dateUtils";
 import styled from "styled-components";
@@ -14,8 +13,8 @@ const BlogPost = () => {
   const [singlePost, setSinglePost] = useState(null);
   const { slug } = useParams();
   useEffect(() => {
-    if (data && data.items && slug) {
-      const post = data.items.find((item) => item.fields.slug === slug);
+    if (data && slug) {
+      const post = data.find((item) => item.fields.slug === slug);
       if (post) {
         setSinglePost(post)
       }
@@ -24,9 +23,10 @@ const BlogPost = () => {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
-  if (!data || !data.items || data.items.length === 0)
+  if (!data || data.length === 0)
     return <p>No data available.</p>;
 
+  
   return (
     <Wrapper>
       {singlePost ? (

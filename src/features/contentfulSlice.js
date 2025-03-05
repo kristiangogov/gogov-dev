@@ -10,6 +10,7 @@ const initialState = {
 export const fetchData = createAsyncThunk('api/fetchData', async (_, { rejectWithValue }) => {
     try {
         const response = await axios.get("/.netlify/functions/getAllBlogPosts");
+        console.log(response.data.message)
         return response.data.message;
     } catch (error) {
         return rejectWithValue(error.message);
