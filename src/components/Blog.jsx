@@ -5,16 +5,17 @@ import styled from "styled-components";
 
 const Links = () => {
   const { data, loading, error } = useSelector((state) => state.contentful);
+  console.log(data)
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
-  if (!data || !data.items) return <p>No data available.</p>;
+  if (!data) return <p>No data available.</p>;
   return (
     <Wrapper>
       <article className="blog-card">
       <h1>Blog</h1>
-      <p>Here you can find the <strong>{data.items.length} blog posts</strong> I wrote.</p>
+      <p>Here you can find the <strong>{data.length} blog posts</strong> I wrote.</p>
       <div className="blog-line"></div>
-        {data.items.map((postData, index) => {
+        {data.map((postData) => {
           return <BlogEntry postData={postData} key={postData.sys.id} />;
         })}
       </article>

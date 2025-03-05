@@ -9,9 +9,10 @@ export async function handler(event, context) {
   try {
     const res = await axios.get(url);
     const data = res.data;
+    const feedPost = res.data.items.filter(item => item.sys.contentType.sys.id === "feedPost");
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: data }),
+      body: JSON.stringify({ message: feedPost }),
     };
   } catch (error) {
     return {
