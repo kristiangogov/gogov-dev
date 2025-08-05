@@ -9,9 +9,13 @@ const Header = () => {
   return (
     <Wrapper>
       {isDarkMode ? (
-        <Link to="/"><img className="logo" src="/litelogo.svg" /></Link>
+        <Link to="/">
+          <img className="logo" src="/litelogo.svg" />
+        </Link>
       ) : (
-        <Link to="/"><img className="logo" src="/darklogo.svg" /></Link>
+        <Link to="/">
+          <img className="logo" src="/darklogo.svg" />
+        </Link>
       )}
       <Navbar />
       <DarkTheme />
@@ -24,9 +28,13 @@ const Wrapper = styled.section`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin: 1rem;
+  max-width: 650px;
+  margin: 1rem auto;
   .logo {
     width: 30px;
+  }
+  @media screen and (max-width: 700px) {
+    margin: 1rem;
   }
 `;
 export default Header;
