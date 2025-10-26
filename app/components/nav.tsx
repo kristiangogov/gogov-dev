@@ -16,7 +16,7 @@ export function Navbar() {
         <div className="flex items-center">
           <Link href="/" className="text-3xl font-semibold flex gap-2">
             <Image
-              src="https://gogov.dev/litelogo.svg"
+              src="/favicon-light.svg"
               alt="logo"
               width={25}
               height={25}
@@ -25,7 +25,7 @@ export function Navbar() {
             />
 
             <Image
-              src="https://gogov.dev/darklogo.svg"
+              src="/favicon-dark.svg"
               alt="logo"
               width={25}
               height={25}
