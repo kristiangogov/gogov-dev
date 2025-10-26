@@ -1,0 +1,69 @@
+---
+title: "Project Showcase: Promo+ Toolkit"
+publishedAt: "2025-10-25"
+summary: "Promo+ Toolkit project description and documentation."
+tags: "Project, Electron, DevOps"
+---
+
+
+### Overview
+
+
+A cross-platform Electron.js desktop application that streamlines and simplifies the use of internal scripts and tools for operations teams.
+
+<Callout emoji="⚙️">
+<code>Electron.js, React.js, Next.js aria-docs ([documentation](https://promo-plus-docs.vercel.app/))</code>
+</Callout>
+<Image
+  src="/promo-plus-toolkit/home-screen.png"
+  alt="promo-plus-toolkit-home-screen"
+  width={624}
+  height={624}
+/>
+
+### How it started
+
+**Promo+ Toolkit** was initially created as a personal side project to learn more about the Electron.js framework. 
+I had a recurring task that required a lot of error-prone manual work. Pulling JSON data from multiple sources and then 
+manually constructing a JSON object to add to a large metadata file.
+I wrote a script to automate the data collection and structuring, and it quickly became the perfect excuse to dive into Electron.js.
+
+### How it's going
+
+After sharing the application with the team and receiving positive feedback, I gradually started adding more functionality,
+introduced better error handling, improved both the UI and the user feedback. It is currently used daily by multiple teams for various tasks.
+
+Its current functionalities feature scripts that pull, manipulate, calculate and update/upload data from and to AWS Services (S3, DynamoDB),
+specific CSV file merging by common identifiers, and a voucher generator. The list is ever expanding depending on the current requirements. 
+Additionally, you can select the AWS profile directly from your `~/.aws/credentials` file and choose the appropriate environment to execute the script. 
+The application also performs checks to ensure the profile credentials and environments match and provides user feedback if they don't.
+<Callout emoji="📄">  
+  You can read more about the **functionality** in the [documentation](https://promo-plus-docs.vercel.app/) page.
+</Callout>
+<Callout emoji="❗">  
+  **NOTE:** Please note that the application is stored in a private GitHub repository so you won't have access to the source code or the download links.
+  If you want to learn more or test out the tool, feel free to contact me.
+</Callout>
+
+## More screenshots
+
+Querying for configuration metadata and listing AWS profiles:
+<Image
+  src="/promo-plus-toolkit/conf-metadata.png"
+  alt="promo-plus-toolkit-conf-metadata-screen"
+  width={624}
+  height={624}
+/>
+Example error handling and message:
+<Image
+  src="/promo-plus-toolkit/error-example.png"
+  alt="promo-plus-toolkit-error-example-screen"
+  width={624}
+  height={624}
+/>
+
+## Future plans
+
+Maintain and improve the application as long as it's useful to me and my colleagues. A migration from AWS to GCP is likely on the to-do list, 
+as our product will soon be migrated there.
+

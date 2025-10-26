@@ -1,0 +1,87 @@
+---
+title: "Setup Netlify serverless functions on local environment"
+publishedAt: "2025-01-24"
+summary: "Beginner-friendly setup of Netlify serverless functions on local dev environment"
+tags: "Netlify, Serverless, DevOps"
+---
+
+I've ran into a lot of headaches trying to run the Netlify serverless functions locally. Probably because I was looking for an easy solution watching YouTube videos and asking Chat GPT, which were both outdated, rather than actually reading Netlify's quite comprehensive documentation or actually following what their CLI prompts suggested. I probably lost about 2 hours banging my head, trying to figure out why the functions were working properly on the Netlify servers, but I couldn't run them locally no matter what.
+
+The solution was actually 2 lines of code. 2!  
+```toml
+[functions]
+  directory = "functions"
+```
+That's it.
+
+So how would that work in a __vite-react__ project?
+
+__Step 1.__ Install the Netlify CLI first.
+```bash
+npm install netlify-cli -g
+```
+__Step 2.__ Create your project and install the dependencies.
+```bash
+npm create vite@latest react-netlify -- --template react
+cd react-netlify
+npm install
+npm install axios
+```
+__Step 3.__
+Create a new file called __netlify.toml__ in the root of your project. Create a new folder called __functions__ and inside it a new folder called __hello__. In that new folder create a __hello.mjs__. Your project structure should look like this:  
+
+```
+react-netlify/
+├── functions/  
+│   ├── hello/  
+│      ├── hello.mjs  
+├── src/  
+├── netlify.toml   
+├── index.html
+etc..
+```
+__Step 4.__ The magic lines of code.
+Inside __netlify.toml__ add:
+```toml
+[functions]
+  directory = "functions"
+```
+
+__Step 5.__ Test
+
+Create a new function for testing:
+```js
+export async function handler(event, context) {
+  const data = "Hello, World!"
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ message: data }),
+  };
+}
+```
+Call it in the react-app:
+```js  
+  const [helloWorld, setHelloWorld] = useState("");
+  const callNetlifyFunction = async () => {
+    try {
+      const res = await axios.get("/.netlify/functions/hello");
+      setHelloWorld(res.data.message);
+    } catch (error) {
+      console.error("Error calling Netlify function:", error);
+      setHelloWorld("Error fetching data");
+    }
+  };
+```
+Render it:
+```html
+  <button onClick={callNetlifyFunction}>Call Function</button>
+  <h1>{helloWorld}</h1>
+```
+__Step 6.__ Run the Netlify server.
+
+```bash
+netlify dev
+```
+!["Hello, World!"](https://i.imgur.com/f00eHlG.png "Hello, World!")
+
+That's all folks.
