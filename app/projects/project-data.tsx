@@ -12,16 +12,16 @@ export const projects: Project[] = [
     url: "/blog/promo-toolkit",
     featured: true,
   },
-  // {
-  //   title: "Restaurant Empire",
-  //   description: "<Prototype> Full-stack Restaurant website",
-  //   url: "https://restaurant-empire-demo.vercel.app/",
-  //   featured: false,
-  // },
-  // {
-  //   title: "Recipes",
-  //   description: "<Prototype> Personal cooking journal",
-  //   url: "https://recipes.gogov.dev/",
-  //   featured: false,
-  // },
+  {
+    title: "Restaurant Empire",
+    description: "<Prototype> Full-stack Restaurant website",
+    url: "https://restaurant-empire-demo.vercel.app/",
+    featured: false,
+  },
+  {
+    title: "Recipes",
+    description: "<Prototype> Personal cooking journal",
+    url: "https://recipes.gogov.dev/",
+    featured: false,
+  },
 ];
