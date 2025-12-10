@@ -1,0 +1,63 @@
+---
+title: "Automation: Configuration Metadata"
+publishedAt: "2025-12-10"
+summary: "Automating configuration metadata updates using Node.js."
+tags: "Script, DevOps, Automation"
+---
+
+
+### Overview
+
+Maintaining configuration metadata in `configurations.json` used to be a tedious manual process -
+pulling files from S3, querying promotions from DynamoDB, copying values, formatting JSON, hoping nothing breaks.
+
+Small task. Big annoyance. Easy to mess up.
+
+So I wrote a quick **Node.js script** (and a GUI version for my [Promo+ Toolkit](/blog/promo-toolkit)) that does the entire process for us:
+
+- Fetches the metadata file from S3  
+- Pulls configuration and promotion data automatically  
+- Generates a clean metadata object  
+- Creates a backup locally
+- (**Script-only** for safety purposes) Prompts to automatically re-upload to S3 with difference count check
+
+A repetitive 10-15min task per configuration → now a 5-second script.
+
+### How It Works
+
+The structure is simple:
+
+```js
+// Add the id's to the array:
+const inputConfigurations = ["config123","config456"]
+const metadata = await queryForMetadataFile();
+// Save backup, just in case
+saveBackup(metadata);
+for (let configuration of inputConfigurations) {
+    // Pull the configuration data from S3:
+    const configurationData = await queryForConfiguration(configuration);
+    // Use it to query for the promotion data in DynamoDB:
+    const promotionData = await queryForPromotion(configurationData.promotionId);
+    // Construct the object:
+    let configurationMetadataObject = {
+      configuration_id: configuration,
+      user_id_type: configurationData.configurationParameters.userIdType,
+      language: configurationData.configurationParameters.language,
+      country: configurationData.configurationParameters.country,
+      // ...
+      // etc.
+    };
+    // Add it to the original:
+    metadata.configurations.push(configurationMetadataObject);
+}
+// Prompt uploading with differnce checks:
+await askUpload();
+```
+
+### GUI Version:
+<Image
+  src="/configuration-metadata/gui-version.png"
+  alt="configuration-metadata-gui-version"
+  width={624}
+  height={624}
+/>
