@@ -44,11 +44,11 @@ export default async function About() {
           </li>
           <li>
             <span className="font-bold">Containers & Orchestration:</span>{" "}
-            Docker, Docker Compose, Kubernetes*
+            Docker, Docker Compose, Kubernetes
           </li>
           <li>
             <span className="font-bold">CI/CD & IaC:</span> GitHub Actions,
-            Jenkins*, Terraform*, Ansible*
+            Terraform, Ansible
           </li>
           <li>
             <span className="font-bold">Monitoring & Observability:</span>{" "}
@@ -56,12 +56,9 @@ export default async function About() {
           </li>
           <li>
             <span className="font-bold">Various Tools:</span> Git, GitHub,
-            Next.js, Electron.js, VirtualBox, Postman etc.
+            Next.js, Electron.js, VirtualBox, Postman, Vercel, Netlify etc.
           </li>
         </ul>
-        <blockquote className="border-l-2 italic">
-          * Currently improving
-        </blockquote>
       </section>
       <section>
         <h3>what i love tinkering with</h3>
@@ -78,19 +75,21 @@ export default async function About() {
           <li>
             <span className="font-bold">Self-hosting:</span> Nextcloud, Seafile,
             Immich, Plex, Pi-Hole... Shame I don't have enough time to sink
-            here, I'm addicted. 
+            here, I'm addicted.
           </li>
         </ul>
       </section>
       <section>
         <h3>career history</h3>
         <p>
-          <span className="text-xs mr-[10px]">2021 - 2023</span> Prepress Team Lead @ DSN
+          <span className="text-xs mr-[10px]">2021 - 2023</span> Prepress Team
+          Lead @ DSN
           <br />
-          <span className="text-xs mr-[12px]">2018 - 2021</span> Prepress Specialist @ DSN
+          <span className="text-xs mr-[12px]">2018 - 2021</span> Prepress
+          Specialist @ DSN
           <br />
-          <span className="text-xs mr-[10px]">2014 - 2018</span> Telecommunications
-          Technician @ A1 Bulgaria / blizoo
+          <span className="text-xs mr-[10px]">2014 - 2018</span>{" "}
+          Telecommunications Technician @ A1 Bulgaria / blizoo
         </p>
       </section>
     </article>
