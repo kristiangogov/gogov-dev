@@ -5,9 +5,9 @@ summary: "Beginner-friendly setup of Netlify serverless functions on local dev e
 tags: "Netlify, Serverless, DevOps"
 ---
 
-I've ran into a lot of headaches trying to run the Netlify serverless functions locally. Probably because I was looking for an easy solution watching YouTube videos and asking Chat GPT, which were both outdated, rather than actually reading Netlify's quite comprehensive documentation or actually following what their CLI prompts suggested. I probably lost about 2 hours banging my head, trying to figure out why the functions were working properly on the Netlify servers, but I couldn't run them locally no matter what.
+Running Netlify Functions locally can fail silently if the functions directory isn’t explicitly configured.
+The platform documentation mentions this, but many guides and examples omit it - leading to confusing discrepancies between local and hosted behavior.
 
-The solution was actually 2 lines of code. 2!  
 ```toml
 [functions]
   directory = "functions"
