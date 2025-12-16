@@ -9,7 +9,7 @@ export default async function About() {
   return (
     <article className="prose prose-quoteless prose-neutral dark:prose-invert mt-[-1.25em]">
       <section>
-        <h1 className="mb-8 text-2xl font-medium">hey!</h1>
+        <h1 className="mb-8 text-2xl font-medium">about</h1>
         <p>
           I'm <span className="font-bold">Kristian Gogov</span>, a Global
           Operations Engineer @ The Coca-Cola Company.
