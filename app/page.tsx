@@ -6,10 +6,10 @@ export default function Page() {
     <section className="">
       <div className="flex flex-col my-10">
         {/* Header Section */}
-        <div className="mb-10 flex flex-col items-center">
+        <div className="mb-10 flex flex-col items-start">
           <h1 className="text-3xl font-bold mb-2">KRISTIAN GOGOV</h1>
           <h2 className="text-md">
-            <span className="font-bold">Global Operations Engineer</span>
+            <span className="font-bold">Cloud Ops & Platform Engineer</span>
             <br className="sm:hidden" />
             <span className="text-red-600 dark:text-red-500"> @ </span>
             The Coca-Cola Company
