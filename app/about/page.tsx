@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-
+import Link from "next/link";
 export const metadata: Metadata = {
   title: "About Me",
   description: "Learn more about my background and journey toward DevOps.",
@@ -9,87 +9,51 @@ export default async function About() {
   return (
     <article className="prose prose-quoteless prose-neutral dark:prose-invert mt-[-1.25em]">
       <section>
-        <h1 className="mb-8 text-2xl font-medium">about</h1>
         <p>
-          I'm <span className="font-bold">Kristian Gogov</span>, a Global
-          Operations Engineer @ The Coca-Cola Company.
+          I'm currently working @{" "}
+          <span className="font-bold">The Coca-Cola Company</span>, where I
+          designed and built{" "}
+          <Link href="/blog/promo-toolkit">
+            <span className="font-bold">Promo+ Toolkit</span>
+          </Link>
+          , a cross-platform desktop application used by operations teams
+          globally to automate repetitive tasks and reduce errors. I also
+          automate day-to-day operational tasks, handle incident management and
+          monitoring, and test and validate releases before they hit production.
         </p>
         <p>
-          I support the global digital promotions platform working with regional
-          teams to ensure reliability, scalability, and automation across a
-          serverless AWS environment. I build internal tools and automation
-          scripts to streamline workflows and reduce manual effort.
-        </p>
-        <p>
-          I'm actively expanding my skills in DevOps and cloud technologies,
-          with a current focus on Infrastructure as Code and container
-          orchestration:{" "}
-          <span className="font-bold">Terraform, Ansible, and Kubernetes.</span>
+          In my free time I love tinkering with my homelab where I'm running a
+          K3s cluster, managing everything remotely via SSH. Currently hosting
+          my media collection via Jellyfin and building out observability with
+          k9s - learning the operational side of Kubernetes by breaking things
+          and fixing them in a real environment.
         </p>
       </section>
       <section>
-        <h3>what i'm good at</h3>
-        <ul>
-          <li>
-            <span className="font-bold">Automation & Scripting:</span>{" "}
-            JavaScript, Python, Bash, AWS SDK
-          </li>
-          <li>
-            <span className="font-bold">Cloud:</span> AWS - S3, DynamoDB,
-            Lambda, CloudWatch, IAM, WAF
-          </li>
-          <li>
-            <span className="font-bold">OS & Networking:</span> Linux, TCP/IP,
-            Forward/Reverse Proxy, DNS, Firewalls, TLS/SSL, HTTP/S
-          </li>
-          <li>
-            <span className="font-bold">Containers & Orchestration:</span>{" "}
-            Docker, Docker Compose, Kubernetes
-          </li>
-          <li>
-            <span className="font-bold">CI/CD & IaC:</span> GitHub Actions,
-            Terraform, Ansible
-          </li>
-          <li>
-            <span className="font-bold">Monitoring & Observability:</span>{" "}
-            CloudWatch, X-Trace, Prometheus, Grafana
-          </li>
-          <li>
-            <span className="font-bold">Various Tools:</span> Git, GitHub,
-            Next.js, Electron.js, VirtualBox, Postman, Vercel, Netlify etc.
-          </li>
-        </ul>
-      </section>
-      <section>
-        <h3>what i love tinkering with</h3>
-        <ul>
-          <li>
-            <span className="font-bold">JavaScript:</span> Electron.js, Next.js,
-            Node.js, everything.js. Unlike most people, I actually like
-            JavaScript and all its quirks 😵‍💫
-          </li>
-          <li>
-            <span className="font-bold">Linux:</span> I'm increasingly immersing
-            in the penguin universe. Thanks Microsoft.
-          </li>
-          <li>
-            <span className="font-bold">Self-hosting:</span> Nextcloud, Seafile,
-            Immich, Plex, Pi-Hole... Shame I don't have enough time to sink
-            here, I'm addicted.
-          </li>
-        </ul>
+        <h3>core skills</h3>
+        <span className="font-bold">Automation & Scripting:</span> JavaScript,
+        Bash, Python, AWS SDK <br />
+        <span className="font-bold">OS & Networking:</span> Linux, TCP/IP, DNS,
+        HTTP(S), TLS <br />
+        <span className="font-bold">Cloud:</span> AWS - S3, DynamoDB, Lambda,
+        CloudWatch, IAM, WAF <br />
+        <span className="font-bold">Delivery & Infrastructure:</span>{" "}
+        Kubernetes, Docker, GitHub Actions
+        <br />
+        <span className="font-bold">Monitoring & Observability:</span>{" "}
+        CloudWatch, X-Trace, Prometheus, Grafana <br />
       </section>
       <section>
         <h3>career history</h3>
         <p>
           <span className="text-xs mr-[10px]">2021 - 2023</span> Prepress Team
-          Lead @ DSN
+          Lead @ <span className="font-bold">DSN</span>
           <br />
           <span className="text-xs mr-[12px]">2018 - 2021</span> Prepress
-          Specialist @ DSN
+          Specialist @ <span className="font-bold">DSN</span>
           <br />
           <span className="text-xs mr-[10px]">2014 - 2018</span>{" "}
-          Telecommunications Technician @ A1 Bulgaria / blizoo
+          Telecommunications Technician @ <span className="font-bold">A1 Bulgaria / blizoo</span>
         </p>
       </section>
     </article>

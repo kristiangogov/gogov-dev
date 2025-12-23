@@ -12,7 +12,6 @@ export default function BlogPosts() {
 
   return (
     <section>
-        <h1 className="mb-8 text-2xl font-medium">blog</h1>
       <div>
         {allBlogs
           .sort((a, b) => {

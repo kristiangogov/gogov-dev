@@ -10,7 +10,6 @@ export const metadata: Metadata = {
 export default function Projects() {
   return (
     <section>
-      <h1 className="mb-8 text-2xl font-medium">projects</h1>
       <div>
         {projects.map((project, index) => (
           <Link
