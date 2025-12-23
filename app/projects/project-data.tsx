@@ -14,13 +14,13 @@ export const projects: Project[] = [
   },
   {
     title: "Restaurant Empire",
-    description: "<Prototype> Full-stack Restaurant website",
+    description: "Full-stack Restaurant website",
     url: "https://restaurant-empire-demo.vercel.app/",
     featured: false,
   },
   {
     title: "Recipes",
-    description: "<Prototype> Personal cooking journal",
+    description: "<WIP> Personal cooking journal",
     url: "https://recipes.gogov.dev/",
     featured: false,
   },
