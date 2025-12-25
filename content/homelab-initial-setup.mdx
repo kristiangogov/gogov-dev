@@ -1,0 +1,108 @@
+---
+title: "Homelab: K3s initial setup"
+publishedAt: "2025-12-25"
+summary: "Setting up a K3s Kubernetes cluster for self-hosted services and hands-on learning."
+tags: "DevOps, Homelab, Automation, Self-Hosting"
+---
+
+### Overview
+
+A personal Kubernetes homelab built on k3s, running on repurposed hardware and serving as both a learning environment and 
+a practical self-hosting platform. Currently hosts Jellyfin media server with secure external access via Tailscale.
+
+<Callout emoji="⚙️">
+  <code>K3s, Kubernetes, Tailscale, Jellyfin, Fedora Linux</code>
+</Callout>
+
+### Why Build a Homelab?
+
+**The goal is simple:** Learn Kubernetes by breaking things in a controlled environment where mistakes are educational rather 
+than expensive. While cloud platforms are great for production workloads, nothing beats having your own cluster to experiment 
+with, especially when some of the services are genuinely useful for daily life.
+
+### Hardware & Setup
+
+**Hardware**: Lenovo ThinkPad T14 Gen 1 that was collecting dust  
+**OS**: Fedora 43 KDE Edition  
+**Engine**: K3s (lightweight Kubernetes)  
+**Management**: k9s for cluster monitoring  
+**Networking**: Tailscale for secure external access
+
+I chose k3s over full Kubernetes because it's purpose-built for this exact use case - single-node clusters, edge computing, and homelabs. 
+It strips away unnecessary components while maintaining full Kubernetes API compatibility, making it perfect for learning the 
+core concepts without the operational overhead.
+
+### Current Services
+
+**Jellyfin**: Self-hosted media server for streaming personal content. Accessible both locally and remotely through the Tailscale network, 
+providing a privacy-focused alternative to commercial streaming services.
+
+### Project Structure
+
+The repository follows a simple, service-based structure:
+
+```
+.
+└── service-name/   # Each service gets its own directory
+    ├── config.yml  # Kubernetes manifests (deployments, services, etc.)
+```
+
+This keeps things organized as the cluster grows and makes it easy to manage each service independently.
+
+<Callout emoji="📚">
+  Check out the full repository on
+  [GitHub](https://github.com/kristiangogov/homelab) to see the Kubernetes
+  manifests and configuration.
+</Callout>
+
+### What I've Learned (So Far)
+
+- **K3s installation and configuration** on bare metal Linux
+- **Kubernetes fundamentals**: pods, deployments, services, persistent volumes
+- **Networking concepts**: ClusterIP vs NodePort, external access patterns
+- **Storage management**: persistent volume claims for stateful applications
+- **Cluster monitoring** with k9s for real-time observability
+- **Secure remote access** using Tailscale mesh networking
+
+### Challenges & Solutions
+
+**Challenge #1: Persistent Storage**  
+Jellyfin needs reliable persistent storage for media libraries and metadata. Learning to configure PersistentVolumes and 
+PersistentVolumeClaims properly was essential - especially understanding the difference between hostPath (local storage) and 
+more sophisticated storage solutions.
+
+**Challenge #2: External Access**  
+Rather than exposing services directly to the internet or dealing with dynamic DNS and port forwarding, I opted for Tailscale. 
+This provides secure, encrypted access to the cluster from anywhere without the security risks of opening ports.
+
+### Future Plans
+
+This is just the beginning. The homelab roadmap includes, in no particular order:
+
+- **Additional services**: AdGuard Home, Home Assistant, Homepage, Seafile
+- **GitOps workflow**: with ArgoCD for declarative deployments
+- **Monitoring stack**: Prometheus + Grafana for metrics and observability
+- **CI/CD pipeline**: for automated testing and deployments
+
+The beauty of a homelab is that it can evolve based on what I want to learn next. Every new service is an opportunity to explore 
+another aspect of Kubernetes and cloud-native technologies.
+
+<Callout emoji="⚠️">
+  **Note:** This is a learning environment, not a production cluster. Security
+  hardening and high availability are on the roadmap but aren't priorities yet.
+  The focus is on learning by doing - and occasionally breaking things.
+</Callout>
+
+### Resources
+
+If you're interested in building your own homelab, here are some resources that helped me:
+
+- [r/homelab community](https://www.reddit.com/r/homelab/) - For inspiring me to host my own stuff
+- [Kubernetes Documentation](https://kubernetes.io/docs/home/)
+- [K3s Official Documentation](https://docs.k3s.io/)
+- [k9s Kubernetes CLI](https://k9scli.io/)
+
+---
+
+The repository is public and available at [github.com/kristiangogov/homelab](https://github.com/kristiangogov/homelab). 
+Feel free to explore the manifests, open issues with suggestions, or reach out if you're building something similar!

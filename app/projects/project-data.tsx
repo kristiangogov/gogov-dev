@@ -13,6 +13,12 @@ export const projects: Project[] = [
     featured: true,
   },
   {
+    title: "Kubernetes Homelab",
+    description: "K3s cluster for self-hosted services",
+    url: "https://github.com/kristiangogov/homelab",
+    featured: true,
+  },
+  {
     title: "Restaurant Empire",
     description: "Full-stack Restaurant website",
     url: "https://restaurant-empire-demo.vercel.app/",
