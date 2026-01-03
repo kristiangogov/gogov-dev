@@ -10,9 +10,6 @@ export default function Page() {
           <h1 className="text-3xl font-bold mb-2">KRISTIAN GOGOV</h1>
           <h2 className="text-md">
             <span className="font-bold">Cloud Ops & Platform Engineer</span>
-            <br className="sm:hidden" />
-            <span className="text-red-600 dark:text-red-500"> @ </span>
-            The Coca-Cola Company
           </h2>
         </div>
 
