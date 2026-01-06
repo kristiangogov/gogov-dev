@@ -1,0 +1,64 @@
+---
+title: "Homelab: GitOps, FluxCD Edition"
+publishedAt: "2026-01-06"
+summary: "Implementing a GitOps flow using FluxCD."
+tags: "DevOps, Homelab, Automation, Self-Hosting, GitOps"
+---
+
+
+### Overview
+
+If you've been following my homelab experiments, you know I love to make things reproducible, self-healing, 
+and slightly over-engineered for fun. Lately, I've been exploring FluxCD to bring true GitOps vibes to my 
+small k3s homelab.
+
+Here's the story, the why, and the how.
+
+<Callout emoji="⚙️">
+  <code>FluxCD</code>
+</Callout>
+
+### Why GitOps in a homelab?
+
+I run a small (for now!) k3s cluster with a mix of “essential” services (think Prometheus, Grafana, Jellyfin, Homepage) and 
+random experiments. Up until now, updating deployments was a mix of `kubectl apply` and hoping I remembered what I changed.
+
+FluxCD changes that by treating **Git as the single source of truth**. Everything I want running in my cluster lives in a 
+Git repo, and Flux automatically syncs it.
+
+### Architecture
+
+The repo structure changed slightly... again, to fit FluxCD. I thought about following the FluxCD official structure, 
+but it seems way too over-engineered for my use-case. Even for me hehe!
+
+```
+.
+├── flux-system/            # GitOps
+├── infrastructure/         # Cluster-wide setup
+│   └── namespaces/
+├── monitoring/             # Monitoring stack
+│   ├── grafana/
+│   ├── prometheus/
+│   ├── kube-state-metrics/
+│   ├── node-exporter/
+│   └── alertmanager/
+├── services/               # Running services
+│   ├── homepage/
+│   └── jellyfin/
+└── scripts/                # Placeholder
+```
+
+### Installation
+
+It was quite straight-forward. Install Flux with the official install script, bootstrap it and go.
+I spent some time fine-tuning the GitHub PAT to make it have just enough premissions, but that was the
+hardest part, honestly.
+
+---
+
+### Resources
+
+- [FluxCD Documentation](https://fluxcd.io/flux/)
+
+The repository is public and available at [github.com/kristiangogov/homelab](https://github.com/kristiangogov/homelab). 
+Feel free to explore the manifests, open issues with suggestions, or reach out if you're building something similar!
