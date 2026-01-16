@@ -1,0 +1,81 @@
+---
+title: "Moving toward virtualization and other design decisions"
+publishedAt: "2026-01-16"
+summary: "Insights on my design decision surrounding my Kubernetes environment."
+tags: "DevOps, Homelab, Self-Hosting, Architecture"
+---
+
+Today's blog post will focus more on the why, rather than the how and what. I'll try to give a little bit more insight
+on why I chose certain tools, architecture and flows.
+
+### Why not Proxmox or Talos?
+
+I'm sure this is the first question everyone is going to ask when they see I'm virtualizing my setup using 
+QEMU/KVM on a Fedora 43 KDE host running Fedora 43 Server VMs. It was an easy decision:
+- Proxmox abstracts way too much for my liking, the whole point of the exercise is knowledge gain, why abstract it?
+- I'm very comfortable in the RHEL universe, I've been daily driving a Fedora for some time now.
+- This is closer to a real-world setup with on-premises servers and keeps me closer to the bare-metal. Which I like.
+- While Talos is an incredible piece of engineering for immutable infrastructure, sticking with the RHEL ecosystem allows 
+me to master the same OS lifecycle management and security hardening (SELinux, Firewalld) that powers the world's largest enterprise environments.
+
+### Why would you need a staging environment?
+
+The simple answer? I don't. I'm the only user of this entire infrastructure.
+
+BUT... I want one. Because I can simulate running a production-grade system where uptime is an absolute must.
+I want to explore the steps of moving my entire stack from bare-metal to a virtualized setup: Zero downtime. My production cluster is 
+fully online, while I completely break the system on the staging environment while testing possible solutions. 
+And when I'm done and happy with the result? Simply deploy the 100% working system to the production environment.
+
+### Terraform, libvirt, Fedora 43 Server
+
+The transition from bare-metal to a virtualized staging environment isn't just about moving code; it's about moving the abstraction layer. 
+On my T14 (Production), I manage the hardware directly. On the Yoga (Staging), I am my own Cloud Provider.
+
+Using the Terraform provider `libvirt`, I've turned a standard Fedora 43 KDE install into a headless compute node. 
+This shift required solving problems that bare-metal users never see:
+
+- **The Seed Image:** Instead of manually installing an OS from a USB stick, I’m now using Fedora Cloud Base images (.qcow2). 
+Terraform clones these images into a storage pool, meaning I can spin up three fresh nodes in about 45 seconds - a far cry from the time it takes to 
+flash an ISO to a drive.
+- **Dynamic Provisioning with Cloud-Init:** This was the biggest hurdle. On bare metal, I configured the user and SSH keys manually once. 
+Now, Terraform generates a Cloud-Init ISO for every VM. This ISO "seeds" the VM on its first boot with my Ed25519 keys, sets the hostname, 
+and ensures the server user has passwordless sudo. It's "Zero Touch" provisioning in my living room.
+- On bare metal, my nodes simply sat on my home network. In the virtualized world, I had to architect how these nodes talk to each other. 
+I chose to manage the libvirt network bridge via Terraform, ensuring that my master and agent nodes have a private, high-speed backbone for 
+K3s internal traffic while maintaining internet access for updates.
+
+
+### The Ultimate Goal: "Any-Hardware" Blueprint
+
+The real goal of this exercise isn't just to have a few VMs running on a laptop; it's to achieve Total Reproducibility.
+
+I am building an end-to-end blueprint where the hardware is irrelevant. Whether it's a spare laptop, a decommissioned enterprise server, 
+or a stack of NUCs, the mission is simple: You take a piece of hardware, run a single orchestration command, and walk away.
+
+When the script finishes, you don't just have an OS; you have an exact replica of:
+
+- **The Virtualization Pattern:** Consistent KVM/Libvirt configurations.
+- **The Security Baseline:** Hardened SSH, SELinux policies, and pre-configured firewalls.
+- **The Cluster State:** A fully bootstrapped K3s environment.
+- **The Application Layer:** FluxCD automatically reconciling my self-hosted services.
+
+By removing the "human element" from the setup process, I've moved the complexity out of my head and into version-controlled code. 
+If my hardware dies tomorrow, my recovery time isn't measured in hours of manual configuration - it's measured in the time it takes 
+for a `git clone` and a `terraform apply`.
+
+The infrastructure is now disposable; the code is the only thing that matters.
+
+---
+
+### Series: Building a Production-Grade Lab
+
+- [Kubernetes Lab: K3s initial setup](/blog/homelab-initial-setup)  
+- [Adding Observability with Prometheus & Grafana](/blog/homelab-observability)  
+- [GitOps, FluxCD Edition](/blog/homelab-gitops-fluxcd)  
+- (You are here) [Moving toward virtualization and other design decisions](/blog/design-decisions)
+
+---
+
+The repository is public and available at [github.com/kristiangogov/homelab](https://github.com/kristiangogov/homelab). 
+Feel free to explore the manifests, open issues with suggestions, or reach out if you're building something similar!

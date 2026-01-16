@@ -9,7 +9,7 @@ export default function Page() {
         <div className="mb-10 flex flex-col items-start">
           <h1 className="text-3xl font-bold mb-2">KRISTIAN GOGOV</h1>
           <h2 className="text-md">
-            <span className="font-bold">Cloud Ops & Platform Engineer</span>
+            <span className="font-bold">DevOps Engineer</span>
           </h2>
         </div>
 
