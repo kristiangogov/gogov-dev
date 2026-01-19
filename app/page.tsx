@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Page() {
   return (
     <section className="">
-      <div className="flex flex-col my-10">
+      <div className="flex flex-col my-4">
         {/* Header Section */}
         <div className="mb-14 flex flex-col items-start">
           {/* Name: Clean and balanced */}

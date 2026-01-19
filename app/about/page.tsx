@@ -8,48 +8,44 @@ export const metadata: Metadata = {
 
 export default async function About() {
   return (
-    <article className="prose prose-quoteless prose-neutral dark:prose-invert mt-[-1.25em]">
-      <h2>From cable lines to cloud pipelines. 🚀</h2>
-      <section>
-        <p>
-          I'm a{" "}
-          <span className="font-bold">
-            Cloud Operations Engineer at The Coca-Cola Company.{" "}
-          </span>
-          I build tools that translate complex infrastructure requirements into
-          safe, repeatable, and automated workflows. My work is focused on
-          reducing operational risk and replacing manual CLI friction with
-          standardized platforms.
-        </p>
-        <p>
-          What I'm doing right now:
-          <ul>
-            <li>
-              <span className="font-bold">Production Automation: </span>
-              Developing a cross-platform internal operations toolkit
-              (Electron/React.js) that standardizes high-risk production
-              workflows for globally distributed teams.
-            </li>
-            <li>
-              <span className="font-bold">The Lab: </span>
-              Operating a multi-stage Kubernetes environment across bare-metal
-              and virtualization. I use this space to bridge the gap between "it
-              works on my machine" and full GitOps automation - refining
-              infrastructure-as-code patterns with Terraform, Ansible, and
-              FluxCD.
-            </li>
-          </ul>
-        </p>
-        <p>
-          You can read more about it in my <Link href="/blog">blog</Link>. If
-          you're looking for further details, my professional history is on{" "}
-          <Link href="https://www.linkedin.com/in/kristiangogov/">
-            LinkedIn
-          </Link>
-          , and my active projects and lab configurations are on my{" "}
-          <Link href="https://github.com/kristiangogov">GitHub</Link>.
-        </p>
-      </section>
-    </article>
+<article className="prose prose-neutral dark:prose-invert max-w-none">
+  {/* Sub-header: No italics, just clean metadata style */}
+  <p className="text-neutral-500 dark:text-neutral-400 mb-8">
+    From cable lines to cloud pipelines. 🚀
+  </p>
+
+  <section className="space-y-8">
+    <p>
+      I’m a Cloud Operations Engineer at The Coca-Cola Company. I build tools 
+      that translate complex infrastructure requirements into safe, repeatable, 
+      and automated workflows, focusing on reducing operational risk and 
+      replacing manual CLI friction with standardized platforms.
+    </p>
+
+    <div className="space-y-6">
+      <h3 className="text-sm font-medium uppercase tracking-wider text-neutral-500">
+        Current Focus
+      </h3>
+      {/* List with no indentation and no bullets */}
+      <div className="space-y-4">
+        <div className="flex flex-col">
+          <span className="text-neutral-900 dark:text-neutral-100 font-medium">Production Automation</span>
+          <span className="text-neutral-500">Developing an internal operations toolkit to standardize workflows for global teams.</span>
+        </div>
+        <div className="flex flex-col">
+          <span className="text-neutral-900 dark:text-neutral-100 font-medium">The Lab</span>
+          <span className="text-neutral-500">Managing a multi-stage Kubernetes environment to refine GitOps patterns with Terraform and FluxCD.</span>
+        </div>
+      </div>
+    </div>
+
+    {/* Footer links */}
+    <p className="pt-6 border-t border-neutral-200 dark:border-neutral-800 text-sm text-neutral-500">
+      Read more on my <Link href="/blog" className="text-neutral-900 dark:text-neutral-100 underline underline-offset-4">blog</Link>, 
+      view my history on <Link href="https://www.linkedin.com/in/kristiangogov/" className="text-neutral-900 dark:text-neutral-100 underline underline-offset-4">LinkedIn</Link>, 
+      or explore the lab on <Link href="https://github.com/kristiangogov" className="text-neutral-900 dark:text-neutral-100 underline underline-offset-4">GitHub</Link>.
+    </p>
+  </section>
+</article>
   );
 }
