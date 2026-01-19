@@ -6,13 +6,33 @@ export default function Page() {
     <section className="">
       <div className="flex flex-col my-10">
         {/* Header Section */}
-        <div className="mb-10 flex flex-col items-start">
-          <h1 className="text-3xl font-bold mb-2">KRISTIAN GOGOV</h1>
-          <h2 className="text-md">
-            <span className="font-bold">DevOps Engineer</span>
-          </h2>
-        </div>
+        <div className="mb-14 flex flex-col items-start">
+          {/* Name: Clean and balanced */}
+          <h1 className="text-xl font-medium tracking-tight text-neutral-900 dark:text-neutral-100">
+            Kristian Gogov
+          </h1>
 
+          {/* The "Here is what I do" section */}
+          <div className="mt-2 flex flex-col gap-1 text-sm text-neutral-500 dark:text-neutral-400">
+            <p>Cloud Operations Engineer at The Coca-Cola Company.</p>
+            <p>
+              Building tools for{" "}
+              <span className="text-neutral-700 dark:text-neutral-300">
+                automated workflows
+              </span>{" "}
+              and refining{" "}
+              <span className="text-neutral-700 dark:text-neutral-300">
+                GitOps patterns
+              </span>{" "}
+              in the lab.
+            </p>
+          </div>
+
+          {/* Subtle prompt to explore */}
+          <p className="mt-6 text-sm text-neutral-500 dark:text-neutral-400">
+            Here you'll find my projects, experiments, and some technical notes.
+          </p>
+        </div>
         {/* Featured Project Card */}
         <div className="w-full max-w-2xl p-6 border border-neutral-200 dark:border-neutral-800 rounded-lg hover:border-neutral-300 dark:hover:border-neutral-700 transition-colors">
           <div className="flex items-start justify-between mb-3">
@@ -24,7 +44,8 @@ export default function Page() {
                 height={25}
                 priority
                 className="self-center"
-              />Promo+ Toolkit
+              />
+              Promo+ Toolkit
             </h3>
             <span className="text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded">
               Featured
