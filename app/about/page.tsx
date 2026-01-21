@@ -11,7 +11,7 @@ export default async function About() {
 <article className="prose prose-neutral dark:prose-invert max-w-none">
   {/* Sub-header: No italics, just clean metadata style */}
   <p className="text-neutral-500 dark:text-neutral-400 mb-8">
-    From cable lines to cloud pipelines. 🚀
+    I love automating stuff, because life's too short to click buttons and repeat steps. If you'll excuse me, I'll go get coffee now! ☕
   </p>
 
   <section className="space-y-8">

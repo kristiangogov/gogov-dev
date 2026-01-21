@@ -1,0 +1,133 @@
+---
+title: "Manual to Makefile - Terraform, KVM, Ansible"
+publishedAt: "2026-01-21"
+summary: "Phase 1-4 from the virtualization process."
+tags: "DevOps, Homelab, Automation, Self-Hosting, Virtualization"
+---
+
+
+### The Transition to "Stage 0" Automation
+
+In my previous post, I discussed the design decisions for moving to a virtualized staging environment on my Fedora 43 host. 
+Today, we get into the weeds of the implementation.  
+
+The goal was simple: I want to be able to destroy my entire staging cluster and recreate it from scratch in under two minutes. 
+No manual ISO mounting, no "next-next-finish" installers, and absolutely no snowflake configurations.
+
+<Callout emoji="⚙️">
+  <code>Terraform, QEMU/KVM, Ansible</code>
+</Callout>
+
+### Phase 1: Terraform & The Libvirt Provider
+
+On Fedora, I chose to stick with the native `libvirt` stack. While many homelabbers go straight for Proxmox, 
+managing KVM/QEMU directly via Terraform feels more "cloud-native". You become your own AWS.
+
+The core of the provisioning layer is the Fedora Cloud Base image. Instead of traditional installs, 
+Terraform clones the `.qcow2` image and attaches a generated `cloud-init` ISO. 
+
+**The "State" Lesson... Again:** Early on, when I was still experimenting with the Terraform configuration, 
+tearing down and building VMs back up, and needed to rebuild again, so I deleted all the Terraform "noise". 
+And with it `terraform.tfstate` (and `terraform.tfstate.backup`!) as well.  
+
+Oopsie. 
+
+Well at least I learned all of the steps manually cleaning up everything after my "smart" decision. 
+If you've ever had to manually `virsh vol-delete` and `undefine` a fleet of stuck domains, you know why State is king.
+
+### Phase 2: Bridging the Gap with Ansible
+
+Terraform is great at building the "house", but it's not meant for "decorating" it. Once the VMs are up and 
+Cloud-Init has injected my SSH keys, Ansible takes over.
+
+My current workflow uses a dynamic approach:
+1. **Terraform** provisions the VMs and outputs their IP addresses.
+2. **Ansible** consumes an inventory and runs a "ping" test to ensure connectivity.
+3. **The Workflow:** I refactored my `cloud-init.cfg` to ensure Ed25519 keys are burned into the image on first boot, 
+allowing for immediate, passwordless Ansible execution.
+
+### Phase 3: The Sanity Layer (The Makefile)
+
+As the project grew, my command history became a mess. I was jumping between the `/terraform` directory 
+and the `/ansible` directory, remembering long strings of flags.
+
+```bash
+# What I was doing before the Makefile:
+
+cd ~/homelab/provisioning/terraform
+terraform apply -auto-approve
+cd ../ansible
+ANSIBLE_CONFIG=inventory/ansible.cfg ansible everything -i inventory/inventory.ini -m ping
+cd ../../
+
+# What I do now:
+
+make rebuild
+# ☕ Done.
+```
+
+If a task is annoying, you automate it. If a command is long, you alias it. I built a `Makefile` to act as the 
+control plane for my workstation.
+
+```makefile
+.PHONY: help ping plan apply destroy
+
+ANSIBLE_DIR := $(abspath $(CURDIR)/../provisioning/ansible)
+TERRAFORM_DIR := $(abspath $(CURDIR)/../provisioning/terraform)
+
+help:
+	@echo "Available commands:"
+	@echo "  ping       - Test connectivity to all hosts"
+	@echo "  plan       - Run `terraform plan`"
+	@echo "  apply      - Run `terraform apply`"
+	@echo "  destroy    - Run `terraform destroy`"
+	@echo "  rebuild    - Rebuild the VM fleet and ping"
+
+ping:
+	cd $(ANSIBLE_DIR) && ansible everything -i inventory/inventory.ini -m ping
+
+plan:
+	cd $(TERRAFORM_DIR) && terraform plan
+
+apply:
+	cd $(TERRAFORM_DIR) && terraform apply
+
+destroy:
+	cd $(TERRAFORM_DIR) && terraform destroy	
+
+rebuild: destroy apply
+	@echo "Waiting 15 seconds for VMs to boot..."
+	@sleep 15
+	$(MAKE) ping
+```
+
+### Phase 4 (Up next)
+
+Now that the infrastructure spins up reliably, it's time to make it useful:
+ 
+- **Hardening:** Automated security baseline to ensure every node is production-ready from boot.  
+- **K3s Orchestration:** Automated cluster lifecycle - provisioning the control plane, worker joins, and secret management via Ansible Vault.  
+- **FluxCD Bootstrap:** Connecting the cluster to my GitHub repository to trigger the full GitOps reconciliation loop for all services.  
+- **The Idempotency Test:** The ultimate goal. One command, ten minutes, and a return to a fully operational, self-healing environment.  
+
+---
+
+### Series: Building a Production-Grade Lab
+
+- [Kubernetes Lab: K3s initial setup](/blog/homelab-initial-setup)  
+- [Adding Observability with Prometheus & Grafana](/blog/homelab-observability)  
+- [GitOps, FluxCD Edition](/blog/homelab-gitops-fluxcd)  
+- [Moving toward virtualization and other design decisions](/blog/design-decisions)
+- (You are here) [Manual to Makefile - Terraform, KVM, Ansible](/blog/homelab-terraform-libvirt)
+
+---
+
+### Resources
+
+- [Terraform Documentation](https://developer.hashicorp.com/terraform/docs)
+- [Ansible Documentation](https://docs.ansible.com/)
+- [QEMU Documentation](https://www.qemu.org/docs/master/)
+- [virsh (libvirt cli)](https://www.libvirt.org/manpages/virsh.html)
+
+The repository is public and available at [github.com/kristiangogov/homelab](https://github.com/kristiangogov/homelab). 
+Feel free to explore the manifests, open issues with suggestions, or reach out if you're building something similar!
