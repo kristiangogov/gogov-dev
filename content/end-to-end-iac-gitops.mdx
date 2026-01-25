@@ -1,0 +1,166 @@
+---
+title: "The Complete Pipeline - End-to-end IaC GitOps"
+publishedAt: "2026-01-25"
+summary: "The final piece of the Total Reproducibility puzzle."
+tags: "DevOps, Homelab, Automation, Self-Hosting, Virtualization, GitOps, IaC"
+---
+
+### Phase 4 Complete: Total Reproducibility Achieved
+
+I can take a bare-metal laptop (or PC), run three commands, and have a full-blown
+Kubernetes cluster running in 15 minutes.
+
+Before automation can take over, all you need a fresh Fedora 43 install with:
+- SSH enabled and listening on port 22
+- Permanent IP configured (optional but recommended)
+- SSH key added from your workstation
+
+```bash
+# On the host
+sudo systemctl enable --now sshd
+
+# On your workstation
+ssh-copy-id server@host-ip
+
+# Verify connectivity
+ansible -i inventory/inventory.ini fedora -m ping
+```
+**Total time: ~2 minutes**
+
+That's it.
+
+The you run 3 commands to provision everything:
+```sh
+make provision-host
+make apply
+make provision
+```
+**Total time: ~15 minutes**  
+**Manual intervention: Zero**
+
+### What Each Command Does
+```sh
+make provision-host
+- Updates all system packages
+- Installs virtualization stack (libvirt, QEMU, KVM)
+- Configures storage pools for VMs
+- Installs and configures Tailscale
+- Sets hostname interactively
+- Adds user to libvirt group
+```
+```sh
+make apply
+- Downloads Fedora Cloud Base image
+- Provisions 2 VMs with cloud-init
+- Configures networking (192.168.122.0/24)
+- Generates Ansible inventory automatically
+```
+```sh
+make provision
+- Updates VMs and installs essential tools
+- Installs K3s on master node
+- Joins agent node to cluster
+- Bootstraps FluxCD to GitHub
+- Extracts kubeconfig to workstation
+- FluxCD automatically deploys all apps from Git:
+  - Jellyfin (media server)
+  - Homepage (dashboard)
+  - Prometheus, Grafana, AlertManager (monitoring)
+  - All exporters and supporting services
+  ```
+
+**Result:** Fully operational cluster with 20+ pods running.
+
+Why I built this:
+- Fun (and learning value, obviously)
+- Reproducibility (staging = production)
+- Disaster recovery (rebuild in 15 minutes)
+
+
+### Networking woes
+
+After countless hours of intense battles with firewalld I yielded and took the high road. There is a slight 
+networking issue that I've done everything, from explicit routing to policies, from local to tailscale,
+from ssh tunnels to prayers, from the vast seas to the high mountains, but wasn't able to fix the "right" way. 
+
+So I'm putting off that battle for 
+when it matters - when I get to the complete, inevitable network overhaul. The host simply refuses any traffic 
+from the outside world to the VMs, while the VMs have no outbound issues.
+
+The workaround is crude, radical, but necessary for my sanity:
+```sh
+# Flush the current rulest
+sudo nft flush ruleset
+# Export it
+sudo nft list ruleset | sudo tee /etc/nftables.conf
+# Enable it
+sudo systemctl enable --now nftables
+# Test for persistance
+sudo firewall-cmd --reload
+```
+
+### The Result
+
+**Infrastructure:**
+- 2 VMs running Fedora 43 Server (2GB RAM, 2 vCPU each)
+- 20GB storage per VM (thin-provisioned from host)
+- Private network (192.168.122.0/24) with DHCP
+- Accessible via Tailscale from anywhere
+
+**Cluster:**
+- K3s v1.28+ (lightweight Kubernetes)
+- 2 nodes (1 control-plane, 1 worker)
+- FluxCD managing deployments from Git
+- Traefik ingress controller
+- Local-path storage provisioner
+
+**Applications (auto-deployed):**
+- Jellyfin (media streaming)
+- Homepage (dashboard)
+- Prometheus (metrics collection)
+- Grafana (visualization)
+- AlertManager (alerting)
+- kube-state-metrics + node-exporter
+
+**Observability:**
+- 20+ pods running across multiple namespaces
+- Grafana dashboards for cluster health
+- Prometheus scraping all services
+- Ready for custom alerts and monitoring
+
+**Time to operational:** ~15 minutes from bare metal  
+**Manual steps:** 3 SSH commands (one-time setup)  
+**Reproducibility:** 100% (tested multiple times)
+
+**The stack:**
+**Host:** Fedora 43 + KVM/libvirt
+**IaC:** Terraform for VMs
+**Config:** Ansible for everything else
+**GitOps:** FluxCD for app deployment
+**Orchestration:** Makefile
+
+### Up next
+
+The backlog is quite long and I haven't yet decided which direction I'm heading next, but the following 
+are prime candidates for my attention next:
+- Actually migrating the production cluster to VMs
+- Define my storage strategy, possibly buy a dedicated NAS... just because.
+- Reinforce my army and attack my nemesis at dawn (*clears throat*... ingress and networking)
+- Any of the million other things I have lined up
+
+
+---
+
+### Series: Building a Production-Grade Lab
+
+- [Kubernetes Lab: K3s initial setup](/blog/homelab-initial-setup)  
+- [Adding Observability with Prometheus & Grafana](/blog/homelab-observability)  
+- [GitOps, FluxCD Edition](/blog/homelab-gitops-fluxcd)  
+- [Moving toward virtualization and other design decisions](/blog/design-decisions)
+- [Manual to Makefile - Terraform, KVM, Ansible](/blog/homelab-terraform-libvirt)
+- (You are here) [The Complete Pipeline - End-to-end IaC GitOps](/blog/end-to-end-iac-gitops)
+
+---
+
+The repository is public and available at [github.com/kristiangogov/homelab](https://github.com/kristiangogov/homelab). 
+Feel free to explore the manifests, open issues with suggestions, or reach out if you're building something similar!
