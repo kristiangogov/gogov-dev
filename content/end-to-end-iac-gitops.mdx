@@ -69,8 +69,6 @@ make provision
   - All exporters and supporting services
   ```
 
-**Result:** Fully operational cluster with 20+ pods running.
-
 Why I built this:
 - Fun (and learning value, obviously)
 - Reproducibility (staging = production)
@@ -102,16 +100,15 @@ sudo firewall-cmd --reload
 ### The Result
 
 **Infrastructure:**
-- 2 VMs running Fedora 43 Server (2GB RAM, 2 vCPU each)
-- 20GB storage per VM (thin-provisioned from host)
+- 2 VMs running Fedora 43 Server
+- 20GB storage per VM
 - Private network (192.168.122.0/24) with DHCP
 - Accessible via Tailscale from anywhere
 
 **Cluster:**
 - K3s v1.28+ (lightweight Kubernetes)
 - 2 nodes (1 control-plane, 1 worker)
-- FluxCD managing deployments from Git
-- Traefik ingress controller
+- FluxCD managing deployments from GitHub
 - Local-path storage provisioner
 
 **Applications (auto-deployed):**
@@ -129,15 +126,14 @@ sudo firewall-cmd --reload
 - Ready for custom alerts and monitoring
 
 **Time to operational:** ~15 minutes from bare metal  
-**Manual steps:** 3 SSH commands (one-time setup)  
 **Reproducibility:** 100% (tested multiple times)
 
 **The stack:**
-**Host:** Fedora 43 + KVM/libvirt
-**IaC:** Terraform for VMs
-**Config:** Ansible for everything else
-**GitOps:** FluxCD for app deployment
-**Orchestration:** Makefile
+**Host:** Fedora 43 + KVM/libvirt  
+**IaC:** Terraform for VMs  
+**Config:** Ansible for everything else  
+**GitOps:** FluxCD for app deployment  
+**Orchestration:** Makefile  
 
 ### Up next
 
