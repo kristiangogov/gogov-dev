@@ -14,7 +14,7 @@ export default function Page() {
 
           {/* The "Here is what I do" section */}
           <div className="mt-2 flex flex-col gap-1 text-sm text-neutral-500 dark:text-neutral-400">
-            <p>Cloud Operations Engineer at The Coca-Cola Company.</p>
+            <p>DevOps / CloudOps Engineer at The Coca-Cola Company.</p>
             <p>
               Building tools for{" "}
               <span className="text-neutral-700 dark:text-neutral-300">

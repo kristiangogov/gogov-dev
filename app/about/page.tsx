@@ -16,7 +16,7 @@ export default async function About() {
 
   <section className="space-y-8">
     <p>
-      I’m a Cloud Operations Engineer at The Coca-Cola Company. I build tools 
+      I'm a DevOps / CloudOps Engineer at The Coca-Cola Company. I build tools 
       that translate complex infrastructure requirements into safe, repeatable, 
       and automated workflows, focusing on reducing operational risk and 
       replacing manual CLI friction with standardized platforms.
