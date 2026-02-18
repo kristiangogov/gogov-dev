@@ -1,0 +1,190 @@
+---
+title: "Networking Overhaul & Production Migration"
+publishedAt: "2026-02-18"
+summary: "Replace Flannel with Cilium, added reverse proxy with NGINX, migrated the bare-metal production cluster to VMs, and simplified everything back to a clean monorepo with Kustomize overlays. Total reproducibility now applies to production too."
+tags: [DevOps, Homelab, Cilium, Networking, Virtualization]
+---
+
+### Overview
+
+The last missing piece (and the one that hurt the most).
+
+In the [SOPS post](/blog/sops-secret-management) I said the next big items were “Networking overhaul with Cilium and Gateway API” 
+and “migrate the bare-metal production cluster to VMs if all goes according to plan.”
+
+Well… the plan went according to plan. Mostly. There were some spectacular failures along the way, but we got there. 
+I'm also still using nodePorts, but I'll eventually get around to Gateway API. Patience, please!
+
+The goal was simple on paper:
+
+- Make staging and production identical in every possible way
+- Replace the default k3s Flannel with Cilium
+- Expose services cleanly from the host without fighting libvirt/firewalld/nftables hell
+- Stop maintaining two branches and go back to the monorepo life with proper `base/` + `production/`&`staging/` overlays
+
+### 1. Bare-Metal → VMs: Production Joins the Club
+
+The ThinkPad (production host) is now running the exact same stack as the Yoga (staging host):
+
+- Fedora 43
+- KVM/libvirt
+- Terraform + cloud-init for two VMs (control-plane + worker)
+- Ansible for everything else
+- Same Makefile-driven pipeline: `make provision-host && make apply && make provision`
+
+**What broke:**
+
+- Hard-coded staging IP in Ansible inventory > No errors anywhere, but no changes > 
+Ansible ran against staging, I chased ghosts for longer than I'd like to admit
+- Terraform libvirt provider pointing at the wrong URI. Again, hard-coding issues (`qemu+ssh://server@yoga` vs `qemu+ssh://server@thinkpad`).
+- Yet another duel with firewalld, this time I won!
+- Wrong flux path `.../clusters/production/flux-system/gotk-sync.yamlgotk-components.yaml`... Yep, absurdly stupid mistake. Cost me another rebuild
+
+I tried extracting as many hard-coded values as possible, but I still don't have a single source of truth. Will eventually figure it out.
+
+After I'm-not-admitting-how-many rebuilds, the production cluster came back in a few minutes with identical manifests, identical secrets (thanks SOPS), identical everything.
+
+### 2. Cilium Instead of Flannel
+
+I installed k3s with networking disabled:
+
+```yaml
+- name: Install K3s Server
+  ansible.builtin.shell: >
+    curl -sfL https://get.k3s.io | 
+    INSTALL_K3S_EXEC='--flannel-backend=none --disable-network-policy --disable=traefik --disable=servicelb' 
+    sh -s - server --write-kubeconfig-mode 644
+```
+Then installed Cilium 1.15.1 via Helm:
+```yaml
+  k8sServiceHost: "{{ ansible_default_ipv4.address }}"
+  k8sServicePort: 6443
+  kubeProxyReplacement: strict
+  operator:
+    replicas: 1
+  ipam:
+    mode: kubernetes
+  ingressController:
+    enabled: true
+    loadbalancerMode: shared
+    default: true
+  l2announcements:
+    enabled: true
+  externalIPs:
+    enabled: true
+```
+
+Why Cilium? eBPF, proper LoadBalancer support without MetalLB, Hubble observability if I ever enable it, and future-proof for Gateway API. 
+Flannel served me well, but it was time to grow up. There's more work to be done, but that's a worry for future me.
+
+### 3. NGINX on the Host - The "Just Make It Work" Reverse Proxy
+
+Libvirt's default NAT bridge + firewalld still hates forwarding traffic from the outside world to the VMs. I tried everything. I lost.  
+**Solution:** NGINX on the Fedora host proxies directly to the K3s NodePorts.
+Ansible does the heavy lifting:
+```yaml
+- name: Install nginx + SELinux fixes
+  ansible.builtin.dnf:
+    name: nginx
+    state: present
+
+- name: Template nginx configs
+  ansible.builtin.template:
+    src: proxy.conf.j2
+    dest: "/etc/nginx/conf.d/{{ item.name }}.conf"
+  loop: "{{ nginx_services }}"
+  notify: Reload nginx
+```
+
+```jinja
+Template (proxy.conf.j2):
+nginxserver {
+    listen {{ item.host_port }};
+
+    location / {
+        proxy_pass http://{{ k3s_master_ip }}:{{ item.node_port }};
+        proxy_set_header Host {{ item.host_header | default('$host') }};
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}
+```
+Services map:
+```yaml
+nginx_services:
+  - name: grafana      host_port: 3000   node_port: 30030
+  - name: jellyfin     host_port: 3096   node_port: 30096
+  - name: prometheus   host_port: 3090   node_port: 30090
+  - name: homepage     host_port: 3100   node_port: 31000   host_header: "192.168.0.109:3100"
+  - name: alertmanager host_port: 3093   node_port: 30093
+```
+Now I just point my browser to http://host-ip:3096 or http://tailscale-name:3096 and Jellyfin appears. Clean, simple, zero port conflicts.
+
+### 4. Back to Monorepo (I Missed It)
+I tried the multi-branch approach (staging branch, production branch, PRs everywhere). I hated it.
+Switched back to the classic Kustomize overlay pattern:
+```text
+├── clusters/
+│   ├── production/
+│   └── staging/
+├── infrastructure/
+│   ├── base/                # Base Configuration
+│       ├── namespaces/
+│       └── networking/
+│   ├── production/          # Production specific overlays
+│   └── staging/             # Staging specific overlays
+... etc.
+```
+
+Flux Kustomizations now point at clusters/production or clusters/staging and everything just works. One repo, one main branch, 
+clean history, easy PRs. Much better.
+
+**What I Learned (Again)**
+
+- Hard-coding anything in a homelab that you plan to destroy/recreate is self-inflicted pain.
+- Host-level NGINX is the nuclear option that just works when libvirt networking fights you.
+- Monorepo + Kustomize overlays > multi-branch for small teams (i.e. me).
+
+### The New Reality
+
+Both production and staging are now:
+
+- 100% VM-based
+- 100% identical manifests (via overlays)
+- Running Cilium with proper LoadBalancer support
+- Exposed cleanly via host NGINX
+
+I can make destroy on the thinkpad, run the pipeline, and 15 minutes later production is back with zero manual steps.
+
+
+### Up next
+
+- Optimizations and reproducibility enhancement
+- Networking fine-tuning
+- Setup and Makefile refinement
+- Implement Kyverno
+
+
+### Series: Building a Production-Grade Lab
+
+- [Kubernetes Lab: K3s initial setup](/blog/homelab-initial-setup)  
+- [Adding Observability with Prometheus & Grafana](/blog/homelab-observability)  
+- [GitOps, FluxCD Edition](/blog/homelab-gitops-fluxcd)  
+- [Moving toward virtualization and other design decisions](/blog/design-decisions)
+- [Manual to Makefile - Terraform, KVM, Ansible](/blog/homelab-terraform-libvirt)
+- [The Complete Pipeline - End-to-end IaC GitOps](/blog/end-to-end-iac-gitops)
+- [Implementing SOPS - GitOps secrets management](/blog/sops-secret-management)
+- (You are here) [Networking Overhaul & Production Migration](/blog/homelab-networking-overhaul)
+
+---
+
+### Resources
+
+- [Cilium Documentation](https://docs.cilium.io/en/stable/overview/intro/)
+- [NGINX Documentation](https://nginx.org/)
+- [Flux Repo structure](https://fluxcd.io/flux/guides/repository-structure/)
+
+---
+
+The repository is public and available at [github.com/kristiangogov/homelab](https://github.com/kristiangogov/homelab). 
+Feel free to explore the manifests, open issues with suggestions, or reach out if you're building something similar!
