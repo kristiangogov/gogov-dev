@@ -7,16 +7,16 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    title: "Promo+ Toolkit",
-    description: "Cross-platform Electron.js internal toolkit",
-    url: "/blog/promo-toolkit",
-    featured: true,
-  },
-  {
     title: "Kubernetes Homelab",
     description: "K3s cluster for self-hosted services",
     url: "https://github.com/kristiangogov/homelab",
     featured: true,
+  },
+  {
+    title: "Promo+ Toolkit",
+    description: "Cross-platform Electron.js internal toolkit",
+    url: "/blog/promo-toolkit",
+    featured: false,
   },
   {
     title: "Restaurant Empire",
