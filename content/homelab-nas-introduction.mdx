@@ -1,0 +1,178 @@
+---
+title: "NAS Introduction and More Networking Issues"
+publishedAt: "2026-03-12"
+summary: "Added a NAS, migrated all storage to NFS, and finally gave up on NAT in favor of a bridge network that actually works."
+tags: DevOps, Homelab, Networking, NAS, TrueNAS, Storage, NFS
+label: Homelab, Networking, Storage
+---
+
+### Overview
+
+Two things happened since the last post: I bought a NAS, and I finally killed NAT.
+
+They're related, as it turns out. The NAS pushed me into the NFS rabbit hole, the NFS rabbit hole exposed the fundamental
+brokenness of my NAT setup, and the NAT situation forced a decision I should have made a long time ago. 
+One thing led to another, as it always does.
+
+Let's start with the new hardware.
+
+### 1. The NAS: HP EliteDesk 800 G2 SFF
+
+The newest addition to the lab is the legendary HP EliteDesk 800 G2 SFF - a small form factor desktop
+that punches well above its price bracket for homelab purposes. It's now running TrueNAS and serving as the
+dedicated storage node for the cluster.
+
+Total cost: 130€ for the HP, 2x35€ for the WD Reds. Not a bad deal considering a new dedicated NAS device with 2x1TB 
+NAS Disks is 3 times as much. Also, one of the disks is on 2k working hours, which is basically brand new!
+
+Hardware layout:
+- **256GB SSD** - OS drive (TrueNAS lives here)
+- **2x1TB WD Red** - Data drives in RAID1 for redundancy
+
+The WD Reds are configured as a mirrored RAID1 pool in TrueNAS. Not the most storage-efficient setup,
+but for a homelab that previously had zero persistent storage strategy, redundancy feels like the right place to start.
+TrueNAS exposes the pool over NFS, the cluster mounts it, done. In theory.
+
+The permanent IP is `192.168.0.104` - added to the prerequisites in the README alongside production and staging hosts.
+
+### 2. Finally Migrating from hostPath Storage
+
+Before the NAS, persistent storage across the cluster was handled with `hostPath` volumes. This works fine 
+until it doesn't — which is to say, it works fine until your pod restarts on a different node and suddenly 
+has no idea where its data went. Or until you rebuild a node. Or until you look at it the wrong way.
+
+**The plan:** deploy the NFS subdir external provisioner, point it at the TrueNAS share, migrate Grafana
+first as a test, then Jellyfin.
+
+**The reality:** total disaster.
+
+**Act 1: NFS provisioner vs. NAT**
+
+Grafana went first. The provisioner deployed, the PVC was created, the pod came up. Looked fine.
+Then Grafana couldn't connect to the NFS share. NFSv3: connection refused. NFSv4: operation not permitted.
+
+The NAS wasn't rejecting the traffic randomly - it was rejecting it consistently, because the traffic
+was coming from inside a NAT network. The VMs sit behind libvirt's NAT bridge on `192.168.122.0/24`.
+From the NAS's perspective, NFS requests were arriving from an address it had no reason to trust,
+on a network it couldn't route back to properly.
+
+Every attempted fix ran into the same wall. Explicit NFS export rules, firewall exceptions,
+manual routing entries - nothing worked. I reverted Grafana back to `hostPath` and accepted
+that this wasn't a storage problem.  
+
+**It was a networking problem. Again.**
+
+<Image
+  src="/barney.webp"
+  alt="barney-stinson"
+  width={624}
+  height={624}
+/>
+
+**Act 2: NAT to Bridge (Another Rebuild Arc)**
+
+The Yoga (staging host) has no Ethernet port. No port, no bridge - that's why NAT was ever in
+the picture. With the NFS situation making NAT untenable, the Yoga was deprecated. 
+It was the right call. There was never going to be a clean solution around that hardware limitation,
+and the workarounds had compounded long enough.
+
+Production on the ThinkPad moved to bridge networking. The migration itself was, predictably, not clean.
+
+**First:** Terraform. The libvirt provider needed updating long ago anyway, so I tried
+migrating to `0.9.x`. That failed. Rolled back to `0.8.x`. Then rewrote the network configuration
+and the setup scripts from scratch to target the bridge interface. Several rebuilds before
+Terraform would provision VMs that actually landed on the right network with stable IPs.
+
+```yaml
+network_interface {
+  bridge         = "br0"
+  wait_for_lease = true
+  }
+```
+
+The Ansible inventory wasn't being updating properly. FluxCD lost connectivity mid-bootstrap
+during one rebuild because the kubeconfig still referenced the old NAT addresses. The usual cascade.
+
+After I-won't-say-how-many-more hours sunk, the cluster was back up on bridge networking. And this time,
+when the NFS provisioner deployed and Grafana tried to mount the share - it worked. The NAS could
+see the VMs, the VMs could see the NAS, traffic flowed in both directions. Problem solved by fixing
+the actual problem instead of working around it.
+
+**What bridge networking also fixed, as a long awaited bonus:**
+- `kubectl` no longer requires an SSH tunnel to reach the cluster
+- NGINX reverse proxy is no longer needed, but I'm keeping it until I'm ready for the next networking battle (hint: won't be soon)
+- Firewalld rules are dramatically simpler
+
+**Act 3: Jellyfin**
+
+With NFS working, Jellyfin was next. The migration appeared to succeed - PVC bound, pod came up,
+everything looked fine. Then media showed up in the wrong directory. Then the PVC ran out of storage.
+Then NFS mount permissions were wrong and Jellyfin couldn't write. Then the namespace was incorrect
+in the Kustomization. Each fix surfaced the next problem.
+
+The commit history tells the story better than I can:
+```
+fix: add pv to kustomize
+fix: yaml syntax err
+fix: media showing up in the wrong place
+fix: jellyfin pvc permissions
+fix: bump jellyfin storage
+fix: wrong namespace
+feat: migrate jellyfin to nas storage
+```
+
+Eventually, it landed. All data now lives on the NAS. Pods can be rescheduled, nodes can be rebuilt,
+and nothing is lost. The `hostPath` era is over.
+
+**What I Learned (Again)**
+
+- NAT is a trap if you're planning to do anything involving inbound connectivity from the host to VMs. 
+Start with bridge if your hardware supports it.
+- `hostPath` is fine for experimentation, actively harmful once you have more than one node.
+- NFS issues are almost always firewall issues in disguise.
+- The Yoga was a good toy, but it had to go. No Ethernet = no bridge = no future.
+
+### The New Reality
+
+Storage and networking are now in a state I'm not embarrassed about:
+
+- All persistent data lives on the NAS, replicated across two drives
+- NFS provisioner handles PVC creation automatically
+- Bridge networking on the ThinkPad means no more NAT workarounds
+- Staging environment retired; one cluster, one source of truth
+
+The lab now has an actual storage strategy instead of hoping pods land on the right node.
+
+Btw, I'm in the market for a new staging machine. Requirements: Ethernet port.
+
+### Up Next
+
+- Networking fine-tuning (it's always networking fine-tuning)
+- Kyverno policies
+
+---
+
+### Series: Building a Production-Grade Lab
+
+- [Kubernetes Lab: K3s initial setup](/blog/homelab-initial-setup)  
+- [Adding Observability with Prometheus & Grafana](/blog/homelab-observability)  
+- [GitOps, FluxCD Edition](/blog/homelab-gitops-fluxcd)  
+- [Moving toward virtualization and other design decisions](/blog/design-decisions)
+- [Manual to Makefile - Terraform, KVM, Ansible](/blog/homelab-terraform-libvirt)
+- [The Complete Pipeline - End-to-end IaC GitOps](/blog/end-to-end-iac-gitops)
+- [Implementing SOPS - GitOps secrets management](/blog/sops-secret-management)
+- [Networking Overhaul & Production Migration](/blog/homelab-networking-overhaul)
+- (You are here) [NAS Introduction and More Networking Issues](/blog/nas-introduction-networking)
+
+---
+
+### Resources
+
+- [TrueNAS Documentation](https://www.truenas.com/docs/)
+- [NFS Subdir External Provisioner](https://github.com/kubernetes-sigs/nfs-subdir-external-provisioner)
+- [libvirt Bridge Networking](https://wiki.libvirt.org/Networking.html)
+
+---
+
+The repository is public and available at [github.com/kristiangogov/homelab](https://github.com/kristiangogov/homelab).
+Feel free to explore the manifests, open issues with suggestions, or reach out if you're building something similar!
