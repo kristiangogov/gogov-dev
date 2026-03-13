@@ -38,7 +38,7 @@ The permanent IP is `192.168.0.104` - added to the prerequisites in the README a
 ### 2. Finally Migrating from hostPath Storage
 
 Before the NAS, persistent storage across the cluster was handled with `hostPath` volumes. This works fine 
-until it doesn't — which is to say, it works fine until your pod restarts on a different node and suddenly 
+until it doesn't - which is to say, it works fine until your pod restarts on a different node and suddenly 
 has no idea where its data went. Or until you rebuild a node. Or until you look at it the wrong way.
 
 **The plan:** deploy the NFS subdir external provisioner, point it at the TrueNAS share, migrate Grafana
@@ -152,17 +152,7 @@ Btw, I'm in the market for a new staging machine. Requirements: Ethernet port.
 
 ---
 
-### Series: Building a Production-Grade Lab
-
-- [Kubernetes Lab: K3s initial setup](/blog/homelab-initial-setup)  
-- [Adding Observability with Prometheus & Grafana](/blog/homelab-observability)  
-- [GitOps, FluxCD Edition](/blog/homelab-gitops-fluxcd)  
-- [Moving toward virtualization and other design decisions](/blog/design-decisions)
-- [Manual to Makefile - Terraform, KVM, Ansible](/blog/homelab-terraform-libvirt)
-- [The Complete Pipeline - End-to-end IaC GitOps](/blog/end-to-end-iac-gitops)
-- [Implementing SOPS - GitOps secrets management](/blog/sops-secret-management)
-- [Networking Overhaul & Production Migration](/blog/homelab-networking-overhaul)
-- (You are here) [NAS Introduction and More Networking Issues](/blog/nas-introduction-networking)
+<SeriesNav currentSlug="/blog/homelab-nas-introduction" />
 
 ---
 

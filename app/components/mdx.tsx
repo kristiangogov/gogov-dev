@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { SeriesNav } from "app/components/series"
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { highlight } from "sugar-high";
 import { TweetComponent } from "./tweet";
@@ -117,6 +118,7 @@ let components = {
   Table,
   del: Strikethrough,
   Callout,
+  SeriesNav,
 };
 
 export function CustomMDX(props) {
