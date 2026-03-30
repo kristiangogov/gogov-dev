@@ -9,7 +9,6 @@ export const metadata: Metadata = {
 export default async function About() {
   return (
     <article className="prose prose-neutral dark:prose-invert max-w-none">
-      {/* Sub-header: No italics, just clean metadata style */}
       <p className="text-neutral-500 dark:text-neutral-400 mb-8">
         I love automating stuff, because life's too short to click buttons and
         repeat steps. If you'll excuse me, I'll go get coffee now! ☕
@@ -17,10 +16,10 @@ export default async function About() {
 
       <section className="space-y-8">
         <p>
-          I'm a DevOps / CloudOps Engineer at The Coca-Cola Company. I build
-          tools that translate complex infrastructure requirements into safe,
-          repeatable, and automated workflows, focusing on reducing operational
-          risk and replacing manual CLI friction with standardized platforms.
+          I'm a DevOps Engineer at ROITI Ltd. I build tools that translate
+          complex infrastructure requirements into safe, repeatable, and
+          automated workflows, focusing on reducing operational risk and
+          replacing manual CLI friction with standardized platforms.
         </p>
 
         <div className="space-y-6">
@@ -31,11 +30,11 @@ export default async function About() {
           <div className="space-y-4">
             <div className="flex flex-col">
               <span className="text-neutral-900 dark:text-neutral-100 font-medium">
-                Production Automation
+                Job Transition
               </span>
               <span className="text-neutral-500">
-                Developing an internal operations toolkit to standardize
-                workflows across globally distributed operations teams.
+                Recently transitioned from The Coca-Cola Company to ROITI Ltd, focusing on
+                expanding my expertise in modern DevOps practices within a new environment.
               </span>
             </div>
             <div className="flex flex-col">
