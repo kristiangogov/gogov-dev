@@ -1,0 +1,224 @@
+---
+title: "Networking: A Retrospective in Pain"
+publishedAt: "2026-04-28"
+summary: "A retrospective on networking mistakes, workarounds, and hard-won lessons across the full homelab journey."
+tags: DevOps, Homelab, Networking, Cilium, Tailscale, K3s
+label: Homelab, Networking
+---
+
+### Overview
+
+If you've been following this series, you've noticed the recurring theme: networking breaks, 
+I fix it badly, something else breaks, I fix that slightly less badly, something new breaks. 
+
+This post isn't a changelog for a single change. It's a full retrospective on every meaningful 
+networking decision (and mistake) made across the life of this project. From bare-metal to NAT VMs to bridged VMs, 
+from Flannel to Cilium, NGINX on the host, static IP requirements and so on.
+
+### 1. Bare-Metal: The Good Old Days
+
+K3s on a ThinkPad. Services exposed via NodePorts. Access via direct IP on the LAN, remote access 
+via Tailscale. No ingress controller, no load balancer, no opinions about CNIs.
+
+And it worked. Almost 2 months of 100% uptime. Genuinely, no complaints.
+
+Tailscale in particular deserves credit here - ten minutes to set up, immediate access to the 
+cluster from anywhere, and it has been rock solid ever since. It's still in the stack today, 
+handling all external access, and will stay there until I get around to building a proper 
+auth system with a secure reverse proxy (hint: ain't happening soon).
+
+The bare-metal phase ended not because it broke, but because I wanted to learn more. 
+Specifically, I wanted VMs, multi-node cluster, proper GitOps, and a setup I could blow up and recreate without 
+starting from scratch. 
+
+Networking was about to become my full-time hobby.
+
+### 2. NAT VMs: Importing Problems at Scale
+
+Moving to virtual machines was the right architectural call. Putting those VMs behind libvirt's 
+default NAT bridge was the networking equivalent of sweeping problems under the rug 
+and then being surprised when you trip over the rug.
+
+The appeal of NAT is obvious: you get isolation, nothing to configure on the host network, 
+works out of the box. What you don't get is any clean path for traffic going *into* the VMs 
+from the outside world, from the NAS (foreshadowing), or from anything that needs to initiate 
+a connection toward the cluster.
+
+VMs on `192.168.122.0/24`, host on `192.168.0.0/24`, libvirt handling translation in between. 
+Fine for outbound. A persistent negotiation with firewalld and hand-written iptables rules for inbound. 
+Rules that worked until a rebuild cleared them. Rules that I didn't fully understand and 
+definitely should not have been writing by hand.
+
+NAT is not a networking solution. It's a postponed networking problem, 
+and the interest compounds.
+
+### 3. Cilium: The Right Tool, Introduced at the Wrong Time
+
+Replacing Flannel with Cilium was always on the roadmap. eBPF networking, proper LoadBalancer 
+support without MetalLB, Hubble observability if I ever got around to it. All the right reasons.
+
+The timing, however, was not right. I introduced Cilium at the same time as the VM migration, 
+which meant debugging two major architectural changes simultaneously. Every failure was ambiguous: 
+was it the CNI, the VM config, or libvirt? The answer, on several occasions, was yes. To all three.
+
+The install itself was clean enough:
+
+```yaml
+- name: Install K3s Server
+  ansible.builtin.shell: >
+    curl -sfL https://get.k3s.io | 
+    INSTALL_K3S_EXEC='--flannel-backend=none --disable-network-policy --disable=traefik --disable=servicelb' 
+    sh -s - server --write-kubeconfig-mode 644
+```
+
+K3s with networking fully disabled, Cilium in via Helm with `kubeProxyReplacement: strict`. 
+The caveat: LoadBalancer IPs refused to assign. Services sat in `<pending>` indefinitely. 
+Cilium was trying to announce IPs on an interface the outside world couldn't meaningfully reach, 
+because the VMs were still sitting behind NAT. Correct tool, wrong foundation.
+
+The fix at the time: don't fix it, move to the reverse proxy, and let future me deal with the 
+underlying network. Future me was not thrilled about this arrangement.
+
+### 4. NGINX
+
+When libvirt's NAT bridge consistently defeats you, you stop fighting it and you bring in NGINX on the host.
+
+```yaml
+nginx_services:
+  - name: grafana      host_port: 3000   node_port: 30030
+  - name: jellyfin     host_port: 3096   node_port: 30096
+  - name: prometheus   host_port: 3090   node_port: 30090
+  - name: homepage     host_port: 3100   node_port: 31000
+  - name: alertmanager host_port: 3093   node_port: 30093
+```
+
+Ansible templates the configs, NGINX proxies traffic to the NodePorts, services become accessible at 
+`http://host-ip:port`. It works. It is not elegant. It works.
+
+I'll say this for the NGINX approach: it's honest. It doesn't pretend to be Kubernetes-native. 
+It solves exactly one problem - getting traffic from the outside world to the VMs - and it does 
+that reliably. The downside is it's one more thing to keep in sync with whatever is actually 
+running in the cluster, and every time I opened the Ansible playbook I felt a small but 
+nonzero amount of shame.
+
+Not enough shame to fix it immediately. Just enough to remember it was there.
+
+### 5. Bridge Networking: Fixing the Actual Problem
+
+The NAS forced the issue. NFS does not work cleanly through NAT - not without a level of 
+configuration that starts to feel like ritual sacrifice to the iptables gods. When NFS mounts 
+started failing because the VMs couldn't properly communicate with a device sitting on the 
+same physical network, the diagnosis was unavoidable: NAT had to go.
+
+`br0` - a bridge interface on the host that puts the VMs directly on the LAN. No NAT, 
+no translation, no firewalld gymnastics. The VMs get real IPs on the home network 
+and behave like actual network citizens.
+
+```yaml
+network_interface {
+  bridge         = "br0"
+  wait_for_lease = true
+}
+```
+
+The migration was, predictably, not clean. Hard-coded IPs in Terraform, Ansible inventory 
+pointing at old NAT addresses, FluxCD losing connectivity mid-bootstrap because the kubeconfig 
+still referenced addresses that no longer existed. The usual cascade. The commit history 
+is best left unexamined.
+
+After enough rebuilds, the cluster came back on bridge networking. And then: NFS worked. 
+`kubectl` worked without an SSH tunnel. Cilium L2 announcements started working. 
+Firewalld rules no longer needed. 
+
+It turns out most of the problems were the same problem wearing different hats, 
+and that problem was NAT.
+
+### 6. Static IP: Closing the Loop
+
+The final networking change looks anticlimactic on paper. It is a single `nmcli` command:
+
+```bash
+sudo nmcli connection modify br0 \
+  ipv4.method manual \
+  ipv4.addresses 192.168.0.111/24 \
+  ipv4.gateway 192.168.0.1 \
+  ipv4.dns "192.168.0.1 1.1.1.1 8.8.8.8"
+```
+
+Getting there was not anticlimactic.
+
+The ThinkPad kept dropping its DHCP lease on `br0`. Intermittently, silently, and at the most 
+inconvenient times. The cluster would be running fine, then suddenly unreachable. 
+SSH timing out. `kubectl` hanging. Everything pointing at a network problem, 
+nothing pointing at *which* network problem.
+
+It took longer than I'd like to admit to trace it back to the host losing its IP. 
+Once I did, the fix was obvious - static IP, done, never think about it again. 
+But that's the nature of infrastructure failures at this layer: the symptom 
+(cluster unreachable) is loud, the cause (host bridge dropped its lease) is quiet, 
+and the distance between the two costs you an afternoon... Or three.
+
+In a setup where stable IPs matter at every layer - Terraform variables, Ansible inventory, 
+kubeconfig, NGINX proxy targets - a floating host address isn't just inconvenient. 
+It's the kind of thing that makes you question your entire stack before you think to 
+check whether the machine still has the same IP it did an hour ago.
+
+### Lessons Learned
+
+**NAT is a trap with delayed consequences.** It works right up until you need inbound 
+connectivity, shared storage, or anything that requires the VMs to look like real hosts on the 
+network. Bridge first, if your hardware supports it.
+
+**Don't stack major changes.** Cilium and VMs landing at the same time made every failure 
+ambiguous and every fix a guess. Boring, sequential changes are underrated.
+
+**Workarounds accumulate interest.** NGINX solved a real problem and I don't regret adding it. 
+But it also let me ignore the broken foundation long enough to keep building on top of it. 
+Every layer of workaround is a small bet that you won't need to tear everything down later.
+I always needed to tear everything down later.
+
+**Tailscale is excellent at exactly what it does.** It is not a substitute for understanding 
+your LAN networking. Using it as one just defers the reckoning.
+
+**The boring stuff matters.** Static IPs, consistent naming, stable hostnames - none of it is 
+interesting, all of it prevents a category of silent failure that only becomes visible at the 
+worst possible moment.
+
+### Current State
+
+The networking stack today: bridge (`br0`) puts the VMs directly on the LAN with real IPs and 
+no NAT in sight. Cilium handles the CNI with L2 announcements finally working correctly. 
+Tailscale stays for external access until a proper auth system and secure reverse proxy 
+make it redundant. NGINX is still on the host - it works, I haven't removed it yet, 
+and I've made peace with that. The host bridge has a static IP, and the cluster stays reachable.
+
+Not perfect. But stable, understood, and mine.
+
+It's not perfect. There's still cleanup to do, Gateway API to implement at some point, 
+and I haven't scratched the surface of what Cilium actually offers. But it's stable in a 
+way it genuinely hasn't been before, and for the first time I understand exactly why each 
+piece is where it is.
+
+That feels like enough. For now.
+
+### Up Next
+
+- No networking for at least a month... hopefully.
+
+---
+
+<SeriesNav currentSlug="/blog/homelab-networking-overview" />
+
+---
+
+### Resources
+
+- [Cilium Documentation](https://docs.cilium.io/en/stable/overview/intro/)
+- [Tailscale Documentation](https://tailscale.com/kb/)
+- [libvirt Bridge Networking](https://wiki.libvirt.org/Networking.html)
+- [NGINX Documentation](https://nginx.org/)
+
+---
+
+The repository is public and available at [github.com/kristiangogov/homelab](https://github.com/kristiangogov/homelab). 
+Feel free to explore the manifests, open issues with suggestions, or reach out if you're building something similar!

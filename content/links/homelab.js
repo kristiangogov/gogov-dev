@@ -8,4 +8,5 @@ export const homelabSeries = [
   { title: "Implementing SOPS - GitOps secrets management", slug: "/blog/sops-secret-management" },
   { title: "Networking Overhaul & Production Migration", slug: "/blog/homelab-networking-overhaul" },
   { title: "NAS Introduction and More Networking Issues", slug: "/blog/homelab-nas-introduction" },
+  { title: "Networking: A Retrospective in Pain", slug: "/blog/homelab-networking-overview" },
 ]
