@@ -15,7 +15,7 @@ export default async function About() {
       </p>
 
       <h3 className="text-sm font-medium uppercase tracking-wider ">
-        anyway...
+        anyway... <span className="lowercase text-neutral-500 dark:text-neutral-400">*sips coffee*.</span>
       </h3>
       <section className="space-y-8 ">
         <p className="text-neutral-500 dark:text-neutral-400">
@@ -52,7 +52,7 @@ export default async function About() {
             K3s cluster with FluxCD, Terraform, Ansible, Cilium, and all the
             usual toys
           </span>
-          . Lately I've also added{" "}
+          . I've also added{" "}
           <span className="text-neutral-700 dark:text-neutral-300">
             TrueNAS
           </span>{" "}

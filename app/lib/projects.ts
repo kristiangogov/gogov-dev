@@ -9,7 +9,7 @@ export const projects = [
       height: 25,
     },
     description:
-      "Multi-environment K3s cluster running self-hosted services on multiple machines. TrueNAS providing presistant storage.",
+      "Multi-environment K3s cluster running self-hosted services on multiple machines. TrueNAS providing persistant storage.",
     stack: [
       "K3s",
       "FluxCD",
@@ -29,7 +29,7 @@ export const projects = [
     ],
     links: [
       {
-        label: "Read more",
+        label: "Blog series",
         href: "/blog/homelab-initial-setup",
       },
       {
