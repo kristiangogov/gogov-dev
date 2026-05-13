@@ -1,0 +1,204 @@
+---
+title: "Diagnosing an Intel i219-V Hardware Hang"
+publishedAt: "2026-05-13"
+summary: "Internet dropping randomly. Turned out to be a known Intel i219-V NIC bug. Here's the full diagnostic trail and the fix."
+tags: DevOps, Homelab, Networking
+label: Homelab, Networking
+---
+
+> "No networking for at least a month... hopefully."
+
+Pft... Like there is a chance...
+
+Anyway.
+
+### Overview
+
+The static IP was set. The bridge was stable. The cluster was finally behaving. And then the internet 
+started dropping again and every single time, unplugging and replugging the ethernet cable fixed it instantly.
+
+That's a specific symptom. And it pointed somewhere I didn't expect.
+
+### The Symptom
+
+After two weeks of stability following the static IP setup (see the networking retrospective), the host started 
+losing connectivity intermittently. No SSH, no `kubectl`, no internet. VMs still visible in `virsh`, 
+but completely unreachable over the network.
+
+The fix was always the same: pull the cable, plug it back in, everything works. Which suggested physical layer. 
+Loose cable, bad port, dirty connection. So I started there.
+
+### The Diagnostic Trail
+
+The goal before touching anything: confirm the root cause. No fixes, just evidence.
+
+**Layer 1: Is the bridge even up?**
+
+```bash
+ip link show br0
+ip addr show br0
+```
+
+Both showed `UP`. Physical interface `enp0s31f6` was up, enslaved to `br0`, alongside the four VM vnets. 
+The bridge itself looked healthy.
+
+**Layer 2: Can we reach the router?**
+
+```bash
+ping -c3 192.168.0.1
+```
+
+Hangs. No response. So the bridge is up, the interface is up, but traffic isn't going anywhere.
+
+**Layer 3: ARP**
+
+```bash
+arp -n 192.168.0.1
+```
+
+Incomplete. No MAC address for the router. The host couldn't resolve the gateway at the ARP level - meaning the 
+bridge wasn't passing ARP packets out to the physical network at all.
+
+```bash
+arping -I br0 -c3 192.168.0.1
+```
+
+Failed. Same conclusion: bridge looks healthy, but no frames are getting through to the physical segment.
+
+**Layer 4: Is the physical interface actually receiving anything?**
+
+```bash
+ip -s link show enp0s31f6
+# wait 5 sec
+ip -s link show enp0s31f6
+```
+
+RX counter: frozen. Not incrementing between runs. Frames weren't arriving at all - 
+not dropped, not forwarded incorrectly. Just not there.
+
+At this point it looked like a router port or cable issue. But ethtool said otherwise:
+
+```bash
+ethtool enp0s31f6 | grep -E "Speed|Duplex|Link"
+```
+
+```
+Speed: 1000Mb/s
+Duplex: Full
+Link detected: yes
+```
+
+A good 1Gbps full-duplex link. The NIC thinks everything is fine. Nothing is arriving.
+
+**Layer 5: there you are!**
+
+```bash
+ethtool -S enp0s31f6 | grep -E "error|drop|miss|reset"
+```
+
+```
+rx_missed_errors: 2378
+```
+
+```bash
+dmesg | grep -i "e1000\|i219\|enp0s31f6" | tail -20
+```
+
+```
+detected hardware unit hang
+```
+
+There it is. The Intel i219-V NIC had entered a hung state. Link up, TX functional, RX completely frozen. 
+The `rx_missed_errors` counter confirmed that frames were arriving at the physical layer but being dropped 
+because the receive unit was locked up.
+
+This is a documented bug in the i219-V on Lenovo T14 Gen1. Common triggers include sustained high throughput 
+(four bridged VMs will do it), power management interference with the NIC, and specific kernel/driver combinations. 
+The unplugging fix worked because it forced link renegotiation, which reset the NIC state - not because anything 
+physical was actually loose.
+
+### The Fix
+
+Two parts: software and hardware, belt and suspenders.
+
+**Disable NIC offload features via ethtool**
+
+Someone figured it out for Proxmox, so I just ported their script logic to my Fedora setup - disable the hardware 
+offload features that trigger the hang:
+
+```bash
+ethtool -K enp0s31f6 gso off gro off tso off tx off rx off rxvlan off txvlan off sg off
+```
+
+What these do:
+
+- `gso` / `tso` Generic/TCP Segmentation Offload: lets the NIC handle packet segmentation instead of the kernel
+- `gro` Generic Receive Offload: coalesces incoming packets before passing to the kernel
+- `rx` / `tx` offloads checksum calculation to hardware
+- `rxvlan` / `txvlan` VLAN tag processing in hardware
+- `sg` Scatter-Gather I/O
+
+Disabling these puts more work back on the CPU, but on a homelab host running four VMs, that's a completely acceptable 
+tradeoff for a NIC that doesn't hang.
+
+**Make it persistent via NetworkManager**
+
+`ethtool` settings don't survive reboots. The clean way to persist them with NetworkManager is a dispatcher script:
+```bash
+/etc/NetworkManager/dispatcher.d/99-disable-offload
+```
+
+```bash
+#!/usr/bin/env bash
+
+if [[ "$1" == enp0s31f6 && "$2" == "up" ]]; then 
+  /usr/sbin/ethtool -K enp0s31f6 gso off gro off tso off tx off rx off rxvlan off txvlan off sg off
+fi
+```
+
+```bash
+chmod +x /etc/NetworkManager/dispatcher.d/99-disable-offload 
+```
+
+NM runs this script whenever the interface comes up - including after boot, after cable reconnection, and after driver reloads. 
+
+**Hardware: changed the cable and router port**
+
+With the software fix in place, also swapped to a different patch cable and a different port on the TP-Link router. 
+The hardware hang is a software/driver issue, not a physical one - but if the cable or port is marginal in any way, 
+it gives the NIC more opportunities to hit edge cases. Cheap insurance.
+
+### Results
+
+No drops since the fix. The `rx_missed_errors` counter has stayed flat, and `dmesg` has been quiet. 
+The cluster stays reachable, the VMs stay accessible, and the unplugging ritual is retired.
+
+
+### The Lesson
+
+The symptom was "internet drops, cable re-plug fixes it." Every instinct says: physical problem. 
+Bad cable, loose port, flaky router.
+
+The actual problem was a NIC entering a hardware-hung state where it maintained link negotiation, reported a healthy connection, 
+and silently stopped receiving frames. The only reason unplugging worked was that it forced a reset of the NIC state.
+
+Systematic diagnosis - layer by layer, RX counters, dmesg - got to the real cause in one session instead of several rounds of 
+replacing cables and hoping. The diagnostic trail is worth following even when the answer looks obvious.
+
+In situations like this I understand why following the OSI model is important.
+
+---
+
+### Resources
+
+- [Intel i219-V Linux driver known issues](https://www.intel.com/content/www/us/en/support/articles/000005480/ethernet-products.html)
+- [ethtool man page](https://man7.org/linux/man-pages/man8/ethtool.8.html)
+- [Proxmox NIC Offloading Fix Community Script](https://community-scripts.org/scripts/nic-offloading-fix?id=nic-offloading-fix)
+
+---
+
+<SeriesNav currentSlug="/blog/i219v-hardware-hang" />
+
+---
+
+The repository is public at [github.com/kristiangogov/homelab](https://github.com/kristiangogov/homelab).

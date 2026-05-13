@@ -9,4 +9,5 @@ export const homelabSeries = [
   { title: "Networking Overhaul & Production Migration", slug: "/blog/homelab-networking-overhaul" },
   { title: "NAS Introduction and More Networking Issues", slug: "/blog/homelab-nas-introduction" },
   { title: "Networking: A Retrospective in Pain", slug: "/blog/homelab-networking-overview" },
+  { title: "Diagnosing an Intel i219-V Hardware Hang", slug: "/blog/diagnosing-hardware-hang" },
 ]
