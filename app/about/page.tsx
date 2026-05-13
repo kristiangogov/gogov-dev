@@ -14,42 +14,63 @@ export default async function About() {
         repeat steps. If you'll excuse me, I'll go get coffee now! ☕
       </p>
 
-      <section className="space-y-8">
-        <p>
-          I'm a DevOps Engineer at ROITI Ltd. I build tools that translate
-          complex infrastructure requirements into safe, repeatable, and
-          automated workflows, focusing on reducing operational risk and
-          replacing manual CLI friction with standardized platforms.
+      <h3 className="text-sm font-medium uppercase tracking-wider ">
+        anyway...
+      </h3>
+      <section className="space-y-8 ">
+        <p className="text-neutral-500 dark:text-neutral-400">
+          I'm a{" "}
+          <span className="text-neutral-700 dark:text-neutral-300">
+            DevOps Engineer at ROITI Ltd
+          </span>
+          , working in the{" "}
+          <span className="text-neutral-700 dark:text-neutral-300">
+            ETRM (Energy Trading and Risk Management)
+          </span>{" "}
+          sector. My current focus is{" "}
+          <span className="text-neutral-700 dark:text-neutral-300">
+            Kubernetes cluster migrations
+          </span>
+          , more specifically moving{" "}
+          <span className="text-neutral-700 dark:text-neutral-300">
+            AKS clusters
+          </span>{" "}
+          from the old kubenet networking to a proper{" "}
+          <span className="text-neutral-700 dark:text-neutral-300">
+            CNI overlay with Cilium
+          </span>
+          .
         </p>
 
-        <div className="space-y-6">
-          <h3 className="text-sm font-medium uppercase tracking-wider text-neutral-500">
-            Current Focus
-          </h3>
-          {/* List with no indentation and no bullets */}
-          <div className="space-y-4">
-            <div className="flex flex-col">
-              <span className="text-neutral-900 dark:text-neutral-100 font-medium">
-                Job Transition
-              </span>
-              <span className="text-neutral-500">
-                Recently transitioned from The Coca-Cola Company to ROITI Ltd, focusing on
-                expanding my expertise in modern DevOps practices within a new environment.
-              </span>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-neutral-900 dark:text-neutral-100 font-medium">
-                The Kubernetes Lab
-              </span>
-              <span className="text-neutral-500">
-                {" "}
-                End-to-end reproducible, multi-stage K3s homelab with FluxCD,
-                Terraform libvirt, and Ansible, featuring Cilium networking,
-                SOPS secrets, NGINX reverse proxy etc.
-              </span>
-            </div>
-          </div>
-        </div>
+        <p className="text-neutral-500 dark:text-neutral-400">
+          On the side, I'm a pretty active{" "}
+          <span className="text-neutral-700 dark:text-neutral-300">
+            homelab tinkerer
+          </span>
+          . I run a multi-node{" "}
+          <span className="text-neutral-700 dark:text-neutral-300">
+            K3s cluster with FluxCD, Terraform, Ansible, Cilium, and all the
+            usual toys
+          </span>
+          . Lately I've also added{" "}
+          <span className="text-neutral-700 dark:text-neutral-300">
+            TrueNAS
+          </span>{" "}
+          into the mix and started playing with some cloud services, so things
+          are getting more interesting (and slightly chaotic).
+        </p>
+        <p className="text-neutral-500 dark:text-neutral-400">
+          I also like to mess around with{" "}
+          <span className="text-neutral-700 dark:text-neutral-300">
+            JavaScript
+          </span>{" "}
+          and its ecosystem, along with{" "}
+          <span className="text-neutral-700 dark:text-neutral-300">
+            workflow automation
+          </span>{" "}
+            -  at this point my `.bashrc` has 5 sourced scripts and I'm running out
+          of shortcut combos 😅.
+        </p>
 
         {/* Footer links */}
         <p className="pt-6 border-t border-neutral-200 dark:border-neutral-800 text-sm text-neutral-500">

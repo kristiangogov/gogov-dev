@@ -14,19 +14,14 @@ export default function Page() {
           <div className="mt-2 flex flex-col gap-1 text-sm text-neutral-500 dark:text-neutral-400">
             <p>DevOps Engineer at ROITI Ltd</p>
             <p>
-              Building tools for{" "}
               <span className="text-neutral-700 dark:text-neutral-300">
-                automated workflows
+                Kubernetes, Linux, Cloud.
               </span>{" "}
-              and refining{" "}
-              <span className="text-neutral-700 dark:text-neutral-300">
-                GitOps patterns
-              </span>{" "}
-              in the lab.
+              Homelab tinkering and JavaScript experiments on the side.
             </p>
           </div>
           <p className="mt-6 text-sm text-neutral-500 dark:text-neutral-400">
-            Here you'll find my projects, experiments, and some technical notes.
+            Here you'll find my projects and some technical notes. Plus the occasional networking rant.
           </p>
         </div>
         <div className="flex flex-col gap-6">

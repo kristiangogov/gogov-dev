@@ -3,26 +3,29 @@ export const projects = [
     title: "Kubernetes Homelab",
     featured: true,
     image: {
-      src: "/k3s.svg",
+      src: "/server.svg",
       alt: "logo",
       width: 25,
       height: 25,
     },
     description:
-      "Multi-environment K3s cluster running self-hosted services on multiple machines with a focus on Total Reproducibility and Environment Isolation.",
+      "Multi-environment K3s cluster running self-hosted services on multiple machines. TrueNAS providing presistant storage.",
     stack: [
       "K3s",
       "FluxCD",
       "SOPS",
       "Cilium",
+      "Kyverno",
       "Tailscale",
-      "NGINX",
+      "Cloudflare",
       "Terraform",
       "Ansible",
       "Fedora",
       "QEMU/KVM",
+      "TrueNAS",
       "Prometheus",
       "Grafana",
+      "It's a long list..."
     ],
     links: [
       {
@@ -45,7 +48,7 @@ export const projects = [
       height: 25,
     },
     description:
-      "Cross-platform Electron.js application that standardizes production automation workflows.",
+      "Cross-platform Electron.js application that standardizes production automation workflows. Built for The Coca-Cola Company.",
     stack: [
       "Electron.js",
       "React.js",
@@ -73,7 +76,7 @@ export const projects = [
       width: 25,
       height: 25,
     },
-    description: "<Work in Progress> Personal cooking journal.",
+    description: "Personal cooking journal. A long-term work-in-progress.",
     stack: [
       "React.js",
       "Redux.js",
