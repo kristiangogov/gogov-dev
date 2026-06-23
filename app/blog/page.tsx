@@ -16,7 +16,7 @@ function parseLabels(str: string): string[] {
 
 export default function BlogPosts() {
   const allBlogs = getBlogPosts();
-
+ 
   const posts = allBlogs
     .sort((a, b) =>
       new Date(a.metadata.publishedAt) > new Date(b.metadata.publishedAt)
@@ -31,7 +31,6 @@ export default function BlogPosts() {
       labels: parseLabels(post.metadata.label),
       formattedDate: formatDate(post.metadata.publishedAt, false),
     }));
-
   const allLabels = Array.from(
     new Set(posts.flatMap((post) => post.labels))
   ).sort();

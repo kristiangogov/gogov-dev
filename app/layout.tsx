@@ -24,7 +24,16 @@ export const metadata: Metadata = {
     siteName: metaData.name,
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+        alt: metaData.title,
+      },
+    ],
   },
+
   robots: {
     index: true,
     follow: true,
@@ -39,6 +48,7 @@ export const metadata: Metadata = {
   twitter: {
     title: metaData.name,
     card: "summary_large_image",
+    images: ["/og.png"],
   },
   icons: {
     icon: "/favicon-light.svg",
@@ -52,9 +62,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.className}`}>
-      <head>
-        
-      </head>
+      <head></head>
       <body className="antialiased flex flex-col items-center justify-center mx-auto mt-2 lg:mt-8 mb-12">
         <ThemeProvider
           attribute="class"

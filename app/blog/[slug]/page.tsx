@@ -58,7 +58,6 @@ export async function generateMetadata({
 export default async function Blog({ params }) {
   const { slug } = await params;
   let post = getBlogPosts().find((post) => post.slug === slug);
-
   if (!post) {
     notFound();
   }
