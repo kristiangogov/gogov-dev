@@ -67,33 +67,33 @@ export const projects = [
       },
     ],
   },
-  {
-    title: "Recipes",
-    featured: false,
-    image: {
-      src: "/recipes.svg",
-      alt: "logo",
-      width: 25,
-      height: 25,
-    },
-    description: "Personal cooking journal. A long-term work-in-progress.",
-    stack: [
-      "React.js",
-      "Redux.js",
-      "Netlify Serverless Functions",
-      "Contentful CMS",
-    ],
-    links: [
-      {
-        label: "Live",
-        href: "https://recipes.gogov.dev/recipes",
-      },
-      {
-        label: "GitHub",
-        href: "https://github.com/kristiangogov/recipes",
-      },
-    ],
-  },
+  // {
+  //   title: "Recipes",
+  //   featured: false,
+  //   image: {
+  //     src: "/recipes.svg",
+  //     alt: "logo",
+  //     width: 25,
+  //     height: 25,
+  //   },
+  //   description: "Personal cooking journal. A long-term work-in-progress.",
+  //   stack: [
+  //     "React.js",
+  //     "Redux.js",
+  //     "Netlify Serverless Functions",
+  //     "Contentful CMS",
+  //   ],
+  //   links: [
+  //     {
+  //       label: "Live",
+  //       href: "https://recipes.gogov.dev/recipes",
+  //     },
+  //     {
+  //       label: "GitHub",
+  //       href: "https://github.com/kristiangogov/recipes",
+  //     },
+  //   ],
+  // },
 //   {
 //     title: "Restaurant Empire",
 //     featured: false,
