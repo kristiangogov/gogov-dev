@@ -15,49 +15,43 @@ export default async function About() {
       </p>
 
       <h3 className="text-sm font-medium uppercase tracking-wider ">
-        anyway... <span className="lowercase text-neutral-500 dark:text-neutral-400">*sips coffee*.</span>
+        anyway...{" "}
+        <span className="lowercase text-neutral-500 dark:text-neutral-400">
+          *sips coffee*.
+        </span>
       </h3>
       <section className="space-y-8 ">
         <p className="text-neutral-500 dark:text-neutral-400">
           I'm a{" "}
           <span className="text-neutral-700 dark:text-neutral-300">
-            DevOps Engineer at ROITI Ltd
+            DevOps Engineer at Dataciders ROITI
           </span>
           , working in the{" "}
           <span className="text-neutral-700 dark:text-neutral-300">
-            ETRM (Energy Trading and Risk Management)
+            Energy Trading and Risk Management
           </span>{" "}
-          sector. My current focus is{" "}
-          <span className="text-neutral-700 dark:text-neutral-300">
-            Kubernetes cluster migrations
-          </span>
-          , more specifically moving{" "}
-          <span className="text-neutral-700 dark:text-neutral-300">
-            AKS clusters
-          </span>{" "}
-          from the old kubenet networking to a proper{" "}
-          <span className="text-neutral-700 dark:text-neutral-300">
-            CNI overlay with Cilium
-          </span>
-          .
+          sector. Most of the work I do is around the infrastructure behind AI
+          services and quantitative models, with Kubernetes, observability, and
+          the usual day to day problems that come with running production
+          systems. A big part of that is owning the Airflow platform end to end,
+          from the Helm charts and pipelines to troubleshooting, monitoring, and
+          moving it between clusters. There is also a mix of work around
+          alerting, Linux systems and an internal AI setup.
         </p>
 
         <p className="text-neutral-500 dark:text-neutral-400">
-          On the side, I'm a pretty active{" "}
           <span className="text-neutral-700 dark:text-neutral-300">
-            homelab tinkerer
+            On the side
           </span>
-          . I run a multi-node{" "}
-          <span className="text-neutral-700 dark:text-neutral-300">
-            K3s cluster with FluxCD, Terraform, Ansible, Cilium, and all the
-            usual toys
-          </span>
-          . I've also added{" "}
-          <span className="text-neutral-700 dark:text-neutral-300">
-            TrueNAS
-          </span>{" "}
-          into the mix and started playing with some cloud services, so things
-          are getting more interesting (and slightly chaotic).
+          , I'm an active homelab and self-hosting enthusiast. These days that
+          means a small fleet of mini and SFF PCs, a custom-built NAS, VLANs,
+          and a pile of self-hosted services running across Proxmox, k3s and
+          Docker Compose. Everything from personal wikis like Docmost and Kaneo,
+          to Frigate and Home Assistant for handling my cameras, and
+          my own local AI setup with Open WebUI, Ollama and Open Terminal. Most
+          of it is managed as code because obviously manually configuring the
+          thing I built specifically to avoid manual configuration would be
+          unacceptable.
         </p>
         <p className="text-neutral-500 dark:text-neutral-400">
           I also like to mess around with{" "}
@@ -68,7 +62,7 @@ export default async function About() {
           <span className="text-neutral-700 dark:text-neutral-300">
             workflow automation
           </span>{" "}
-            -  at this point my `.bashrc` has 5 sourced scripts and I'm running out
+          - at this point my `.bashrc` has 5 sourced scripts and I'm running out
           of shortcut combos 😅.
         </p>
 
