@@ -25,8 +25,13 @@ export function Project({ project }) {
         </h3>
 
         {project.featured && (
-          <span className="text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded">
+          <span className="text-xs text-neutral-100 dark:text-neutral-800 bg-neutral-800 dark:bg-neutral-100 px-2 py-1 rounded">
             Featured
+          </span>
+        )}
+         {project.archived && (
+          <span className="text-xs text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded">
+            Archived
           </span>
         )}
       </div>

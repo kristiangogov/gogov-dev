@@ -44,11 +44,10 @@ export default async function About() {
             On the side
           </span>
           , I'm an active homelab and self-hosting enthusiast. These days that
-          means a small fleet of mini and SFF PCs, a custom-built NAS, VLANs,
+          means a small fleet of mini and SFF PCs, a custom-built NAS,
           and a pile of self-hosted services running across Proxmox, k3s and
           Docker Compose. Everything from personal wikis like Docmost and Kaneo,
-          to Frigate and Home Assistant for handling my cameras, and
-          my own local AI setup with Open WebUI, Ollama and Open Terminal. Most
+          to Frigate for handling my cameras. Most
           of it is managed as code because obviously manually configuring the
           thing I built specifically to avoid manual configuration would be
           unacceptable.

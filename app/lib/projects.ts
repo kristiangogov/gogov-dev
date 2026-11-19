@@ -1,7 +1,41 @@
 export const projects = [
   {
-    title: "Kubernetes Homelab",
+    title: "Homelab Evolution",
     featured: true,
+    archived: false,
+    image: {
+      src: "/k3s.svg",
+      alt: "logo",
+      width: 25,
+      height: 25,
+    },
+    description:
+      "The 3rd Edition of my homelab. 3 Proxmox nodes, end-to-end declarative IaC and GitOps Kubernetes via k3s and Flux.",
+    stack: [
+      "Proxmox",
+      "K3s",
+      "Flux",
+      "Terraform",
+      "Ansible",
+      "Traefik",
+      "Cloudflare",
+      "Tailscale",
+      "SOPS",
+      "Debian",
+      "TrueNAS",
+      "More..."
+    ],
+    links: [
+      {
+        label: "GitHub",
+        href: "https://github.com/kristiangogov/homelab-evolution",
+      },
+    ],
+  },
+  {
+    title: "Kubernetes Homelab",
+    featured: false,
+    archived: true,
     image: {
       src: "/server.svg",
       alt: "logo",
@@ -41,6 +75,7 @@ export const projects = [
   {
     title: "Promo+ Toolkit",
     featured: false,
+    archived: true,
     image: {
       src: "/promo-plus-toolkit/icon.png",
       alt: "logo",
@@ -67,51 +102,4 @@ export const projects = [
       },
     ],
   },
-  // {
-  //   title: "Recipes",
-  //   featured: false,
-  //   image: {
-  //     src: "/recipes.svg",
-  //     alt: "logo",
-  //     width: 25,
-  //     height: 25,
-  //   },
-  //   description: "Personal cooking journal. A long-term work-in-progress.",
-  //   stack: [
-  //     "React.js",
-  //     "Redux.js",
-  //     "Netlify Serverless Functions",
-  //     "Contentful CMS",
-  //   ],
-  //   links: [
-  //     {
-  //       label: "Live",
-  //       href: "https://recipes.gogov.dev/recipes",
-  //     },
-  //     {
-  //       label: "GitHub",
-  //       href: "https://github.com/kristiangogov/recipes",
-  //     },
-  //   ],
-  // },
-//   {
-//     title: "Restaurant Empire",
-//     featured: false,
-//     description: "Full-stack restaurant website prototype.",
-//     stack: ["React.js", "Express.js", "Node.js", "MongoDB"],
-//     links: [
-//       {
-//         label: "Live Demo",
-//         href: "https://restaurant-empire-demo.vercel.app/",
-//       },
-//       {
-//         label: "GitHub Front-end",
-//         href: "https://github.com/kristiangogov/re_client",
-//       },
-//       {
-//         label: "GitHub API",
-//         href: "https://github.com/kristiangogov/re_server",
-//       },
-//     ],
-//   },
 ];
