@@ -1,0 +1,88 @@
+---
+title: "My Homelab's Evolution"
+publishedAt: "2026-11-19"
+summary: "Third time's the charm? A rebuilt homelab on 3 Proxmox nodes, k3s, Flux and SOPS, plus what I learned from the first two attempts."
+tags: "Homelab, Architecture, k3s, Proxmox, Terraform, Ansible, SOPS, Cloudflare, Frigate, Flux, Traefik"
+label: Homelab, Architecture
+---
+
+### Make-shift phase
+
+It's been a few months since my last article. A very busy few months. I've started a new job in April, where I'm working on multiple projects, 
+so time for my home infrastructure was very limited. 
+
+With the little time I had, and the maintenance requirements of my Kubernetes lab, 
+on top of the fact I had just installed surveillance cameras and Frigate, which doesn't play very well with Kubernetes, I had a decision to make.
+
+That decision was to tear down everything and rebuild my services in the easiest way to run and maintain, 
+until I had time to do it properly - bare metal Debian server with Docker Compose stack, fully automated with Ansible.
+I had everything up and running in a weekend and it served me well for a few months.
+
+But I finally found time to tinker, and the Kubernetes itch was becoming unbearable.
+
+### Complete rebuild - 3rd Edition
+
+So, why rebuild from the ground up for the **3rd time** you might wonder? A few reasons.
+
+My [first attempt](https://github.com/kristiangogov/homelab) at k3s was... exploratory. And flawed from the get-go. There were many things that I thought were good 
+decisions at the time, but weren't. Maybe they were learning wise, but definitely not stability wise. Or sanity wise.
+Libvirt Terraform provider was terrible, using NAT networks over LAN IPs was terrible, using a ThinkPad with a flawed NIC
+driver that froze every couple of days was terrible, or offloading the driver so it doesn't freeze was literally frying the CPU. 
+And those were just the things on top of other minor issues.
+
+However flawed my first attempt might have been though, it was definitely a *MASSIVE* learning experience. I've learned so much about 
+Kubernetes, Networking, Linux, Automation, Virtualization and so on. No course would give you this, let alone in less than 4 months.
+
+The [Docker Compose stack](https://github.com/kristiangogov/homelab-stable) was always going to be a temporary solution, I never intended to run it long term, but I needed my services to be reliable.
+And that was the quick and easy way.
+
+So here we are, the 3rd edition, or what I've dramatically called the [Homelab Evolution](https://github.com/kristiangogov/homelab-evolution). 
+This time around, with all the knowledge from my previous attempts, I could do things the *proper* way. No afterthought, cobbled-together Cilium networking, 
+just because I thought it was cool (it was, though!), no half-baked architecture that I wasn't sure about, no needless complexity where possible.
+
+The right (for me, personally, of course) way!
+
+### Hardware
+
+I've been shopping the sales, so to say. If I wanted things done right, I wanted a Kubernetes cluster. And a Kubernetes cluster requires 3 nodes 
+(unless you want to do QDevice shenanigans).
+So here's what I ended up with: 
+- HP EliteDesk 800 G2 SFF + 2x1TB NAS Drives (running TrueNAS) ~150€
+- HP EliteDesk 800 G2 SFF (Proxmox Node) ~50€
+- Lenovo ThinkCentre M710q (Proxmox Node) ~90€
+- Lenovo ThinkCentre M700 (Proxmox Node) ~120€
+- TP-Link TL-SG108E (Managed Switch) ~40€?
+- TP-Link TL-SG1006PP (PoE Switch) ~40€?
+
+Total cost of everything, excluding my cameras ~500€. I'm quite happy to be honest. That's a lot of stuff to tinker with. Of course, as every homelabber, 
+I always need just that one more thing *cough, cough* **router/firewall/2-LAN port Mini PC** *cough, cough*. But I'm done spending for now. At some point I'll go 
+the VLAN network segmentation route, though.
+
+### Architecture
+
+Now, the fun part. I'm not going to bore you with every detail ([that's what the repo is for](https://github.com/kristiangogov/homelab-evolution)), but here's the big picture.
+
+Three Proxmox nodes, each standalone (no Proxmox clustering, that's one more thing to babysit). On top of them, VMs provisioned by Terraform and configured by Ansible.
+Those VMs form the actual cluster: **k3s**, one node per host, managed by Flux, so git is the source of truth and nothing gets applied by hand.
+Well, *almost* nothing. I'm only human.
+
+The NAS stays outside of all this on purpose. It holds my data and my backups, and I don't want those depending on the thing I'm constantly breaking.
+
+A few decisions I'm especially happy with:
+
+- **Traefik instead of jumping straight to Cilium.** It's boring, it works. Remember the *no needless complexity* rule?
+- **PostgreSQL Database lives outside the cluster.** One Postgres VM, no crazy HA. It's a homelab, not a bank. Absurdly easy to back up with restic too.
+- **SOPS + age for secrets.** I tried Infisical, but it seemed like more work than returns. Encrypted files in git and one key is so much easier to maintain.
+- **Cloudflare Tunnel for public access. Tailscale for private.** Could I just open a port, harden the security, self-host WireGuard? Yes. Would I? Hell no.
+
+And Frigate, the one that started all this? It's running in the cluster now, pinned to the node with the iGPU passed through from Proxmox, so detection doesn't fry the CPU.
+Kubernetes and Frigate are finally getting along. Mostly.
+
+The result is a lab I can rebuild from a git repo and a single key. I can spin up test VMs and clusters, and tear them back down, with a single line of Terraform and an Ansible playbook run.
+Stable services, with enough room to experiment and break stuff. Exactly what I wanted.
+
+### What's next
+
+It's running, but a lab is never *done*. My immediate to-do list includes catching up on my blogging and trying out Immich and Kavita.
+
+I'll write about the parts that deserve their own posts. Until then, happy tinkering!
