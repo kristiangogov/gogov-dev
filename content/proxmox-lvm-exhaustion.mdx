@@ -1,0 +1,64 @@
+---
+title: "Postmortem: One hastily set variable broke my prod VMs"
+publishedAt: "2026-11-24"
+summary: "LVM-thin exhaustion on a Proxmox host took down two guests. Recovery was a rebuild from git and restic. The only loss was the Frigate DB."
+tags: Proxmox, lvm, Terraform, Homelab, Backups, Postmortem
+label: Homelab, Postmortem
+---
+
+
+### Overview
+
+The `local-lvm` thin pool on my Proxmox host (`thinkcentre`) hit 100% Data. Two VMs, **production** (the docker compose stack with Postgres) and 
+**k3s-node-3**, got I/O errors and started failing.
+
+**Impact:** both VMs down with I/O errors  
+**Recovery:** full rebuild from Terraform, Ansible, Flux and restic, about 30 minutes  
+**Data lost:** Frigate DB only (expected)
+
+### What happened
+
+The pool is ~156GB. I, mistakenly, while setting up Terraform vars, passed each VM a 200 GB disk each, which was a placeholder value I forgot to change.
+So I had 400 GB provisioned on a ~156 GB pool. Thin provisioning is fine until the guests actually use the space, so I completely missed it.
+
+It got worse because discard was off. I had no `discard=on,ssd=1` on the virtual disks and no `fstrim.timer` in the guests. 
+Blocks freed inside the guests (docker layers, image pulls, logs) never went back to the pool. 
+Allocation only grew: vm-100 sat at ~79 GB and vm-903 at ~77 GB. Together that is the whole pool.
+
+### Recovery
+
+Short version: I didn't fight for the old VMs. Proxmox can't shrink disks, so the fix was to rebuild them at 40-60 GB each anyway.
+
+- Terraform recreated the VMs, now with discard and ssd enabled.
+- Ansible configured them, since the whole lab is roles, no manual config.
+- Flux brought the k3s workloads back from git. `k3s-node-3` was drained, removed along with its node-password secret, and replaced.
+- Data came back from restic. Postgres dumps, karakeep and silverbullet were all in the repo on the NAS.
+
+Everything that mattered was either in git or in a backup. The rebuild took about 30 minutes.
+
+### What I lost
+
+The Frigate database. It lives in a PVC that wasn't in the backup. Recordings are excluded on purpose and the config is in git, so the only loss is event history. 
+I can live without it, but it's an easy gap to close, so the PVC goes into the restic job.
+
+### Prevention steps
+
+- Terraform validation: `sum(disk_size) <= 0.8 x pool size`
+- Alerts on pool Data%/Meta% and VG free space
+- `discard=on,ssd=1` on all disks, `fstrim.timer`
+- Keep 10-20 GB unallocated in the VG, set `thin_pool_autoextend_threshold`
+
+
+### Backup gaps
+
+- Add the Frigate PVC to the restic job
+- Scheduled restore test
+
+### Takeaway
+
+The outage came from an unchecked number in a Terraform variable, and the cost was one SQLite file's worth of camera events. 
+That is the result I wanted from treating the homelab like production: VMs are disposable, state is in git and backups, and a dead host is a 
+`terraform apply` away from being fine.
+
+Two caveats. Restore tests are still on my todo list, so "easily restore" currently means "restored it once, under pressure". 
+And I still don't know what exactly ate the 156 GB, dead blocks or real data. `fstrim` will tell.
